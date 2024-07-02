@@ -33,5 +33,4 @@ userSchema.virtual('fullname').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 
-
 module.exports = mongoose.model('User', userSchema);
