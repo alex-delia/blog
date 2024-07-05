@@ -6,9 +6,7 @@ const { body, validationResult } = require("express-validator");
 //display posts on GET
 exports.posts_list = asyncHandler(async (req, res, next) => {
     const allPosts = await Post.find().populate('author').exec();
-    res.json({
-        posts: allPosts,
-    });
+    res.json(allPosts);
 });
 
 //display individual post on GET
@@ -22,9 +20,7 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({
-        post: post,
-    });
+    res.json(post);
 });
 
 //create post on POST
