@@ -8,3 +8,5 @@ router.get('/:authorId', user_controller.author_detail);
 
 //GET request for displaying all authors
 router.get('/', user_controller.author_list);
+
+module.exports = router;
