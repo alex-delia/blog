@@ -3,8 +3,12 @@ const Comment = require('../models/comment');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
 
+//GET all comments for a post
 exports.post_comments = asyncHandler(async (req, res, next) => {
-    res.send('GET request for displaying post comments');
+    const comments = await Comment.find({ post: req.params.postId }).populate('user');
+    res.json({
+        comments: comments
+    });
 });
 
 //create comment on POST
