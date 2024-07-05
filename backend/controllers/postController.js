@@ -5,12 +5,26 @@ const { body, validationResult } = require("express-validator");
 
 //display posts on GET
 exports.posts_list = asyncHandler(async (req, res, next) => {
-    res.send('GET request for posts list');
+    const allPosts = await Post.find().populate('author').exec();
+    res.json({
+        posts: allPosts,
+    });
 });
 
 //display individual post on GET
 exports.post_detail = asyncHandler(async (req, res, next) => {
-    res.send(`GET request for individual post: ${req.params.postId}`);
+    const post = await Post.findById(req.params.id).populate('author').exec();
+
+    if (post === null) {
+        // No results.
+        const err = new Error("Post not found");
+        err.status = 404;
+        return next(err);
+    }
+
+    res.json({
+        post: post,
+    });
 });
 
 //create post on POST
