@@ -9,6 +9,7 @@ const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
 const commentsRouter = require('./routes/comments');
 const usersRouter = require('./routes/users');
+const authorsRouter = require('./routes/authors');
 
 const cors = require('cors');
 
@@ -35,6 +36,7 @@ app.use('/', indexRouter);
 app.use('/posts', postsRouter);
 app.use('/posts/:postId/comments', commentsRouter);
 app.use('/users', usersRouter);
+app.use('/authors', authorsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
