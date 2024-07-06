@@ -3,6 +3,8 @@ const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 //GET author details
 exports.author_detail = asyncHandler(async (req, res, next) => {
@@ -90,15 +92,36 @@ exports.user_create = [
         // Data from form is valid.
         // Save user.
         await user.save();
-        res.json({
-            message: "User Created",
-            name: `${user.firstName} ${user.lastName}`,
-            email: user.email,
+
+        jwt.sign({ user }, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
+            if (err) {
+                res.sendStatus(403).json(err);
+            } else {
+                res.json({
+                    message: "User Created",
+                    name: `${user.firstName} ${user.lastName}`,
+                    email: user.email,
+                    token
+                });
+            }
         });
     })
 ];
 
 //delete user on DELETE
 exports.user_delete = asyncHandler(async (req, res, next) => {
-    res.send(`DELETE request for deleting user: ${req.params.userId}`);
+    const user = await User.findByIdAndDelete(req.params.userId).exec();
+
+    if (user === null) {
+        // No results.
+        const err = new Error("User not found");
+        err.status = 404;
+        return next(err);
+    }
+
+    res.json({
+        message: 'User Deleted',
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+    });
 });
