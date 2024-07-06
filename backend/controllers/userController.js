@@ -4,6 +4,7 @@ const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
 require('dotenv').config();
 
 //GET author details
@@ -93,9 +94,10 @@ exports.user_create = [
         // Save user.
         await user.save();
 
-        jwt.sign({ user }, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
+        const payload = { id: user._id, name: user.fullname, email: user.email };
+        jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
             if (err) {
-                res.sendStatus(403).json(err);
+                res.status(403).json(err);
             } else {
                 res.json({
                     message: "User Created",
@@ -106,6 +108,48 @@ exports.user_create = [
             }
         });
     })
+];
+
+//login user
+exports.login = [
+    body('email')
+        .trim()
+        .escape(),
+    body('password')
+        .trim()
+        .escape(),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        passport.authenticate('local', { session: false }, (err, user) => {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                res.status(401).json({ error: 'Incorrect email or password.' });
+            }
+
+            const payload = { id: user._id, name: user.fullname, email: user.email };
+            jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
+                if (err) {
+                    res.status(403).json({ err, message: err.message });
+                } else {
+                    res.json({
+                        message: "User Logged In Successfully",
+                        name: `${user.firstName} ${user.lastName}`,
+                        email: user.email,
+                        token
+                    });
+                }
+            });
+        })(req, res, next);
+    }
 ];
 
 //delete user on DELETE
