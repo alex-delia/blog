@@ -3,6 +3,8 @@ const Post = require('../models/post');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
 
+const authenticateJWT = require('../middlewares/authenticateToken');
+
 //display posts on GET
 exports.posts_list = asyncHandler(async (req, res, next) => {
     const allPosts = await Post.find().populate('author').exec();
@@ -24,9 +26,15 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
 });
 
 //create post on POST
-exports.post_create = asyncHandler(async (req, res, next) => {
-    res.send(`POST request for new post`);
-});
+exports.post_create = [
+    //verify the JWT Token, then serve the route
+    authenticateJWT,
+
+    asyncHandler(async (req, res, next) => {
+        // If JWT authentication succeeds, req.user will contain the decoded token payload
+        res.json({ message: 'You accessed the protected route!', user: req.user });
+    })
+];
 
 //update post on PUT
 exports.post_update = asyncHandler(async (req, res, next) => {
