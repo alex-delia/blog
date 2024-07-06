@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const indexRouter = require('./routes/index');
@@ -10,6 +13,8 @@ const postsRouter = require('./routes/posts');
 const commentsRouter = require('./routes/comments');
 const usersRouter = require('./routes/users');
 const authorsRouter = require('./routes/authors');
+
+const User = require('./models/user');
 
 const cors = require('cors');
 
@@ -31,6 +36,42 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+passport.use(
+  new LocalStrategy({
+    usernameField: 'email',
+  }, async (username, password, done) => {
+    try {
+      const user = await User.findOne({ email: username });
+
+      if (!user) {
+        return done(null, false);
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        return done(null, false);
+      }
+      return done(null, user);
+
+    } catch (err) {
+      return done(err);
+    }
+  }
+  ));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  };
+});
 
 app.use('/', indexRouter);
 app.use('/posts', postsRouter);
