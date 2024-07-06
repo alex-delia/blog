@@ -15,7 +15,7 @@ exports.author_detail = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json(author);
+    res.json({ author });
 });
 
 //GET user details
@@ -24,7 +24,7 @@ exports.author_list = asyncHandler(async (req, res, next) => {
         .sort({ firstName: 1 })
         .exec();
 
-    res.json(allAuthors);
+    res.json({ allAuthors });
 });
 
 //create user on POST
