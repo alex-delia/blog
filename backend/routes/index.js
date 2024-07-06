@@ -6,4 +6,8 @@ router.get('/', function (req, res, next) {
   res.send('GET request for index page');
 });
 
+router.post('/login', function (req, res, next) {
+  res.send('GET request for index page');
+});
+
 module.exports = router;
