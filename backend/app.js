@@ -92,6 +92,7 @@ app.use(function (err, req, res, next) {
     message: err.message,
     code: err.status || 500,
     details: err.details || null,
+    stack: err.stack,
   });
 });
 
