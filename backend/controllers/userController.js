@@ -7,6 +7,21 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 require('dotenv').config();
 
+//GET list of all authors
+exports.author_list = asyncHandler(async (req, res, next) => {
+    const allAuthors = await User.find({ accountType: 'author' }, 'firstName lastName')
+        .sort({ firstName: 1 })
+        .exec();
+
+    if (allAuthors.length === 0) {
+        const err = new Error("No Authors found");
+        err.status = 404;
+        return next(err);
+    }
+
+    res.json({ author_list: allAuthors });
+});
+
 //GET author details
 exports.author_detail = asyncHandler(async (req, res, next) => {
     const author = await User.findById(req.params.authorId, 'firstName lastName').exec();
@@ -19,15 +34,6 @@ exports.author_detail = asyncHandler(async (req, res, next) => {
     }
 
     res.json({ author });
-});
-
-//GET user details
-exports.author_list = asyncHandler(async (req, res, next) => {
-    const allAuthors = await User.find({ accountType: 'author' }, 'firstName lastName')
-        .sort({ firstName: 1 })
-        .exec();
-
-    res.json({ allAuthors });
 });
 
 //create user on POST
@@ -77,18 +83,19 @@ exports.user_create = [
 
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
+        if (!errors.isEmpty()) {
+            const err = new Error('Form Data is invalid');
+            err.status = 400;
+            err.details = errors.array();
+            return next(err);
+        }
+
         const user = new User({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
             password: hashedPassword,
         });
-
-        if (!errors.isEmpty()) {
-            // There are errors. Render form again with sanitized values/errors messages.
-            res.status(400).json(errors.array());
-            return;
-        }
 
         // Data from form is valid.
         // Save user.
@@ -123,8 +130,12 @@ exports.login = [
     (req, res, next) => {
         // Extract the validation errors from a request.
         const errors = validationResult(req);
+
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            const err = new Error('Form Data is invalid');
+            err.status = 400;
+            err.details = errors.array();
+            return next(err);
         }
 
         passport.authenticate('local', { session: false }, (err, user) => {
@@ -132,13 +143,21 @@ exports.login = [
                 return next(err);
             }
             if (!user) {
-                res.status(401).json({ error: 'Incorrect email or password.' });
+                const err = new Error('Incorrect email or password.');
+                err.status = 401;
+                return next(err);
             }
 
-            const payload = { id: user._id, name: user.fullname, email: user.email };
+            const payload = {
+                id: user._id,
+                name: user.fullname,
+                email: user.email,
+                accountType: user.accountType
+            };
+
             jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
                 if (err) {
-                    res.status(403).json({ err, message: err.message });
+                    return next(err);
                 } else {
                     res.json({
                         message: "User Logged In Successfully",
