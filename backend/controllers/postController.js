@@ -3,11 +3,16 @@ const Post = require('../models/post');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
 
-const authenticateJWT = require('../middlewares/authenticateToken');
-
 //display posts on GET
 exports.posts_list = asyncHandler(async (req, res, next) => {
     const allPosts = await Post.find().populate('author').exec();
+
+    if (allPosts.length === 0) {
+        const err = new Error("No Posts found");
+        err.status = 404;
+        return next(err);
+    }
+
     res.json({ post_list: allPosts });
 });
 
@@ -27,12 +32,42 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
 
 //create post on POST
 exports.post_create = [
-    //verify the JWT Token, then serve the route
-    authenticateJWT,
+    body('title')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Title Must Be Specified')
+        .escape(),
+    body('text')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Post Text Must Be Specified')
+        .escape(),
 
     asyncHandler(async (req, res, next) => {
-        // If JWT authentication succeeds, req.user will contain the decoded token payload
-        res.json({ message: 'You accessed the protected route!', user: req.user });
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            const err = new Error('Form Data is invalid');
+            err.status = 400;
+            err.details = errors.array();
+            return next(err);
+        }
+
+        const post = new Post({
+            title: req.body.title,
+            text: req.body.text,
+            author: req.user.id
+        });
+
+        await post.populate({
+            path: 'author',
+            select: 'firstName lastName'
+        });
+        // Data from form is valid.
+        // Save post.
+        await post.save();
+
+        res.json({ message: 'Post made successfully', post: post });
     })
 ];
 

@@ -20,7 +20,6 @@ function authenticateJWT(req, res, next) {
 }
 
 function requireAuthor(req, res, next) {
-    console.log(req.user);
     if (req.user && req.user.accountType === 'author') {
         return next();
     }
