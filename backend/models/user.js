@@ -26,6 +26,11 @@ const userSchema = new Schema({
         required: true,
         default: 'viewer',
         enum: ['viewer', 'author'],
+    },
+    isAdmin: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
