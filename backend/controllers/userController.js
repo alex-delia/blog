@@ -190,8 +190,6 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    console.log(currentUser);
-
     if (!currentUser.isAdmin && currentUser.id !== userToDelete.id) {
         const err = new Error("You do not have permission to delete user");
         err.status = 404;

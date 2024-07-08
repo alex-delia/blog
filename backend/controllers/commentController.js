@@ -34,8 +34,6 @@ exports.comment_create = [
             return next(err);
         }
 
-        console.log(req.params);
-
         const comment = new Comment({
             text: req.body.text,
             user: req.user.id,
