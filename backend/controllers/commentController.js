@@ -58,21 +58,9 @@ exports.comment_create = [
 
 //delete comment on POST
 exports.comment_delete = asyncHandler(async (req, res, next) => {
-    const comment = await Comment.findById(req.params.commentId);
+    const commentId = req.comment.id;
 
-    if (!comment) {
-        const err = new Error("Comment not found");
-        err.status = 404;
-        return next(err);
-    }
-
-    if (comment.user.toString() !== req.user.id && req.user.accountType !== 'author') {
-        const err = new Error("User not authorized to delete this comment");
-        err.status = 403;
-        return next(err);
-    }
-
-    await comment.deleteOne();
+    const comment = await Comment.findByIdAndDelete(commentId);
 
     res.json({
         message: 'Comment Deleted Successfully',

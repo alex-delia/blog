@@ -1,5 +1,7 @@
-const req = require('express/lib/request');
 const jwt = require('jsonwebtoken');
+const asyncHandler = require('express-async-handler');
+
+const Comment = require('../models/comment');
 
 function authenticateJWT(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
@@ -20,7 +22,8 @@ function authenticateJWT(req, res, next) {
 }
 
 function requireAuthor(req, res, next) {
-    if (req.user && req.user.accountType === 'author') {
+    const currentUser = req.user;
+    if (currentUser && currentUser.accountType === 'author') {
         return next();
     }
     const err = new Error('User is not an author');
@@ -28,7 +31,29 @@ function requireAuthor(req, res, next) {
     return next(err);
 }
 
+const deleteCommentAuthorization = asyncHandler(async (req, res, next) => {
+    const currentUser = req.user;
+    const comment = await Comment.findById(req.params.commentId);
+
+    if (!comment) {
+        const err = new Error("Comment not found");
+        err.status = 404;
+        return next(err);
+    }
+
+    if (comment.user.toString() !== currentUser.id && currentUser.accountType !== 'author') {
+        const err = new Error("User not authorized to delete this comment");
+        err.status = 403;
+        return next(err);
+    }
+
+    // Attach comment to the request object for further processing
+    req.comment = comment;
+    next();
+});
+
 module.exports = {
     authenticateJWT,
     requireAuthor,
+    deleteCommentAuthorization
 };
