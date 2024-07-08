@@ -16,17 +16,18 @@ const postSchema = new Schema({
         type: String,
         required: true,
     },
-    timestamp: {
-        type: Date,
-        required: true,
-        default: Date.now,
-    },
     isPublished: {
         type: Boolean,
         required: true,
         default: false,
     },
-});
+    updatedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+},
+    { timestamps: true }
+);
 
 postSchema.virtual('url').get(function () {
     return `/post/${this._id}`;

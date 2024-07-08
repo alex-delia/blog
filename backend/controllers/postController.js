@@ -2,6 +2,7 @@ const Post = require('../models/post');
 
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
+const { findByIdAndUpdate } = require('../models/user');
 
 //display posts on GET
 exports.get_posts = asyncHandler(async (req, res, next) => {
@@ -72,9 +73,43 @@ exports.post_create = [
 ];
 
 //update post on PUT
-exports.post_update = asyncHandler(async (req, res, next) => {
-    res.send(`PUT request for updating post: ${req.params.postId}`);
-});
+exports.post_update = [
+    body('title')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Title Must Be Specified')
+        .escape(),
+    body('text')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Post Text Must Be Specified')
+        .escape(),
+    asyncHandler(async (req, res, next) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            const err = new Error('Form Data is invalid');
+            err.status = 400;
+            err.details = errors.array();
+            return next(err);
+        }
+
+        const postId = req.postToModify.id;
+
+        const post = new Post({
+            _id: postId,
+            title: req.body.title,
+            text: req.body.text,
+            author: req.postToModify.author,
+            isPublished: req.postToModify.isPublished,
+            updatedBy: req.user.id
+        });
+
+        const updatedPost = await Post.findByIdAndUpdate(postId, post, { new: true, runValidators: true });
+
+        res.json({ message: 'Post updated successfully', data: updatedPost });
+    })
+];
 
 //delete post on DELETE
 exports.post_delete = asyncHandler(async (req, res, next) => {

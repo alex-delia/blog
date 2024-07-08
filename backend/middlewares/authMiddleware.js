@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 
 const Comment = require('../models/comment');
 const User = require('../models/user');
+const Post = require('../models/post');
 
 function authenticateJWT(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
@@ -76,9 +77,34 @@ const deleteUserAuthorization = asyncHandler(async (req, res, next) => {
     next();
 });
 
+const modifyPostAuthorization = asyncHandler(async (req, res, next) => {
+    const currentUser = req.user;
+
+    const postToModify = await Post.findById(req.params.postId).exec();
+
+    if (!postToModify) {
+        // No results.
+        const err = new Error("Post not found");
+        err.status = 404;
+        return next(err);
+    }
+
+    if (!currentUser.isAdmin &&
+        (currentUser.id !== postToModify.author.id.toString() && currentUser.accountType === 'author')) {
+        const err = new Error("You do not have permission to modify/delete post");
+        err.status = 404;
+        return next(err);
+    }
+
+    // Attach user to delete to the request object for further processing
+    req.postToModify = postToModify;
+    next();
+});
+
 module.exports = {
     authenticateJWT,
     requireAuthor,
     deleteCommentAuthorization,
-    deleteUserAuthorization
+    deleteUserAuthorization,
+    modifyPostAuthorization
 };
