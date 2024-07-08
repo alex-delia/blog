@@ -113,5 +113,9 @@ exports.post_update = [
 
 //delete post on DELETE
 exports.post_delete = asyncHandler(async (req, res, next) => {
-    res.send(`DELETE request for deleting post: ${req.params.postId}`);
+    const postId = req.postToModify.id;
+
+    const post = await Post.findByIdAndDelete(postId).exec();
+
+    res.json({ message: 'Post Deleted Successfully', data: post });
 });

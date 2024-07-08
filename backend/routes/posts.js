@@ -17,6 +17,6 @@ router.post('/', authenticateJWT, requireAuthor, post_controller.post_create);
 router.put('/:postId', authenticateJWT, modifyPostAuthorization, post_controller.post_update);
 
 //DELETE request for deleting post
-router.delete('/:postId', post_controller.post_delete);
+router.delete('/:postId', authenticateJWT, modifyPostAuthorization, post_controller.post_delete);
 
 module.exports = router;
