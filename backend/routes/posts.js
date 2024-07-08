@@ -5,10 +5,10 @@ const post_controller = require('../controllers/postController');
 const { authenticateJWT, requireAuthor } = require('../middlewares/authMiddleware');
 
 /* GET Posts. */
-router.get('/', post_controller.posts_list);
+router.get('/', post_controller.get_posts);
 
 //GET request for individual post
-router.get('/:postId', post_controller.post_detail);
+router.get('/:postId', post_controller.get_post_by_id);
 
 //POST request for creating post
 router.post('/', authenticateJWT, requireAuthor, post_controller.post_create);

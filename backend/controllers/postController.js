@@ -4,7 +4,7 @@ const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
 
 //display posts on GET
-exports.posts_list = asyncHandler(async (req, res, next) => {
+exports.get_posts = asyncHandler(async (req, res, next) => {
     const allPosts = await Post.find().populate('author').exec();
 
     if (allPosts.length === 0) {
@@ -17,7 +17,7 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 });
 
 //display individual post on GET
-exports.post_detail = asyncHandler(async (req, res, next) => {
+exports.get_post_by_id = asyncHandler(async (req, res, next) => {
     const post = await Post.findById(req.params.id).populate('author').exec();
 
     if (post === null) {

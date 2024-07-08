@@ -8,7 +8,7 @@ const passport = require('passport');
 require('dotenv').config();
 
 //GET list of all authors
-exports.author_list = asyncHandler(async (req, res, next) => {
+exports.get_authors = asyncHandler(async (req, res, next) => {
     const allAuthors = await User.find({ accountType: 'author' }, 'firstName lastName')
         .sort({ firstName: 1 })
         .exec();
@@ -23,7 +23,7 @@ exports.author_list = asyncHandler(async (req, res, next) => {
 });
 
 //GET author details
-exports.author_detail = asyncHandler(async (req, res, next) => {
+exports.get_author_by_id = asyncHandler(async (req, res, next) => {
     const author = await User.findById(req.params.authorId, 'firstName lastName').exec();
 
     if (author === null) {
