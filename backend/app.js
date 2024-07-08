@@ -74,8 +74,8 @@ passport.deserializeUser(async (id, done) => {
 });
 
 app.use('/', indexRouter);
-app.use('/posts', commentsRouter);
 app.use('/posts', postsRouter);
+app.use('/posts/:postId/comments', commentsRouter);
 app.use('/users', usersRouter);
 app.use('/authors', authorsRouter);
 
