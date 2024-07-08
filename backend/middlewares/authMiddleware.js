@@ -52,8 +52,32 @@ const deleteCommentAuthorization = asyncHandler(async (req, res, next) => {
     next();
 });
 
+const deleteUserAuthorization = asyncHandler(async (req, res, next) => {
+    const currentUser = req.user;
+
+    const userToDelete = await User.findById(req.params.userId).exec();
+
+    if (!userToDelete) {
+        // No results.
+        const err = new Error("User not found");
+        err.status = 404;
+        return next(err);
+    }
+
+    if (!currentUser.isAdmin && currentUser.id !== userToDelete.id) {
+        const err = new Error("You do not have permission to delete user");
+        err.status = 404;
+        return next(err);
+    }
+
+    // Attach user to delete to the request object for further processing
+    req.userToDelete = userToDelete;
+    next();
+});
+
 module.exports = {
     authenticateJWT,
     requireAuthor,
-    deleteCommentAuthorization
+    deleteCommentAuthorization,
+    deleteUserAuthorization
 };
