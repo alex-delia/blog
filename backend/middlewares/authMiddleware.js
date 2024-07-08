@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 
 const Comment = require('../models/comment');
+const User = require('../models/user');
 
 function authenticateJWT(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
@@ -41,7 +42,7 @@ const deleteCommentAuthorization = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    if (comment.user.toString() !== currentUser.id && currentUser.accountType !== 'author') {
+    if (!currentUser.isAdmin && comment.user.toString() !== currentUser.id) {
         const err = new Error("User not authorized to delete this comment");
         err.status = 403;
         return next(err);
