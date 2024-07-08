@@ -13,7 +13,7 @@ exports.post_comments = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ data: comments });
+    res.json({ message: 'Comments retrieved successfully', data: comments });
 });
 
 //create comment on POST

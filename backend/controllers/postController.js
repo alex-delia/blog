@@ -13,7 +13,7 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ post_list: allPosts });
+    res.json({ message: 'Posts retrieved successfully', data: allPosts });
 });
 
 //display individual post on GET
@@ -27,7 +27,7 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ post });
+    res.json({ message: `Post retrieved successfully`, data: post });
 });
 
 //create post on POST
@@ -67,7 +67,7 @@ exports.post_create = [
         // Save post.
         await post.save();
 
-        res.json({ message: 'Post made successfully', post: post });
+        res.json({ message: 'Post created successfully', data: post });
     })
 ];
 

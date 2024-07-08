@@ -19,7 +19,7 @@ exports.author_list = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ author_list: allAuthors });
+    res.json({ message: 'Authors retrieved successfully', data: allAuthors });
 });
 
 //GET author details
@@ -33,7 +33,7 @@ exports.author_detail = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ author });
+    res.json({ message: `Author ${author.fullname} retrieved successfully`, data: author });
 });
 
 //create user on POST
@@ -101,15 +101,20 @@ exports.user_create = [
         // Save user.
         await user.save();
 
-        const payload = { id: user._id, name: user.fullname, email: user.email };
+        const payload = {
+            id: user._id,
+            name: user.fullname,
+            email: user.email,
+            accountType: user.accountType
+        };
+
         jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
             if (err) {
                 res.status(403).json(err);
             } else {
                 res.json({
                     message: "User Created",
-                    name: `${user.firstName} ${user.lastName}`,
-                    email: user.email,
+                    data: payload,
                     token
                 });
             }
@@ -161,8 +166,7 @@ exports.login = [
                 } else {
                     res.json({
                         message: "User Logged In Successfully",
-                        name: `${user.firstName} ${user.lastName}`,
-                        email: user.email,
+                        data: payload,
                         token
                     });
                 }
@@ -184,7 +188,6 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
 
     res.json({
         message: 'User Deleted',
-        name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
+        data: user.fullname,
     });
 });
