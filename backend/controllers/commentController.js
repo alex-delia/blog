@@ -68,7 +68,7 @@ exports.comment_delete = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    if (comment.user.toString() !== req.user.id) {
+    if (comment.user.toString() !== req.user.id && req.user.accountType !== 'author') {
         const err = new Error("User not authorized to delete this comment");
         err.status = 403;
         return next(err);
