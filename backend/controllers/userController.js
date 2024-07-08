@@ -105,10 +105,11 @@ exports.user_create = [
             id: user._id,
             name: user.fullname,
             email: user.email,
-            accountType: user.accountType
+            accountType: user.accountType,
+            isAdmin: user.isAdmin
         };
 
-        jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1d' }, (err, token) => {
             if (err) {
                 res.status(403).json(err);
             } else {
@@ -157,10 +158,11 @@ exports.login = [
                 id: user._id,
                 name: user.fullname,
                 email: user.email,
-                accountType: user.accountType
+                accountType: user.accountType,
+                isAdmin: user.isAdmin
             };
 
-            jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7 days' }, (err, token) => {
+            jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1d' }, (err, token) => {
                 if (err) {
                     return next(err);
                 } else {
@@ -177,17 +179,32 @@ exports.login = [
 
 //delete user on DELETE
 exports.user_delete = asyncHandler(async (req, res, next) => {
-    const user = await User.findByIdAndDelete(req.params.userId).exec();
+    const currentUser = req.user;
 
-    if (user === null) {
+    const userToDelete = await User.findById(req.params.userId).exec();
+
+    if (!userToDelete) {
         // No results.
         const err = new Error("User not found");
         err.status = 404;
         return next(err);
     }
 
+    console.log(currentUser);
+
+    if (!currentUser.isAdmin && currentUser.id !== userToDelete.id) {
+        const err = new Error("You do not have permission to delete user");
+        err.status = 404;
+        return next(err);
+    }
+
+    await User.findByIdAndDelete(req.params.userId).exec();
+
     res.json({
         message: 'User Deleted',
-        data: user.fullname,
+        data: {
+            name: userToDelete.fullName,
+            email: userToDelete.email
+        }
     });
 });
