@@ -2,7 +2,6 @@ const Post = require('../models/post');
 
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
-const { findByIdAndUpdate } = require('../models/user');
 
 //display posts on GET
 exports.get_posts = asyncHandler(async (req, res, next) => {
@@ -19,7 +18,7 @@ exports.get_posts = asyncHandler(async (req, res, next) => {
 
 //display individual post on GET
 exports.get_post_by_id = asyncHandler(async (req, res, next) => {
-    const post = await Post.findById(req.params.id).populate('author').exec();
+    const post = await Post.findById(req.params.postId).populate('author').exec();
 
     if (post === null) {
         // No results.
