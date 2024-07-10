@@ -1,44 +1,28 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import useSWR from 'swr';
+import { axiosFetch } from '../../helpers/fetch';
+import { useParams } from 'react-router-dom';
+import { DateTime } from "luxon";
 
 const usePostData = () => {
-    let { postId } = useParams();
-    const [postData, setPostData] = useState(null);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { postId } = useParams();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`http://localhost:3000/posts/${postId}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const result = await response.json();
-                setPostData(result);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const { data: post, error, isLoading } = useSWR(`http://localhost:3000/posts/${postId}`, axiosFetch, {
+        dedupingInterval: 1000 * 60 * 10, // cache for 10 minutes});
+    });
 
-        fetchData();
-    }, [postId]);
-
-    return { postData, error, loading };
+    return { post, error, isLoading };
 };
 
 const Post = () => {
-    const { postData, error, loading } = usePostData();
+    const { post, error, isLoading } = usePostData();
 
-    if (loading) return <p>Loading...</p>;
+    if (isLoading) return <p>Loading...</p>;
     if (error) return <p>A network error was encountered</p>;
 
     return (
         <div className="mt-5">
-            <h2 className="text-2xl text-center font-bold">{postData.data.title}</h2>
-            <p className="text-lg">{postData.data.text}</p>
+            <h2 className="text-2xl text-center font-bold mb-3">{post.data.title}</h2>
+            <p className="text-lg">{post.data.text}</p>
         </div>
     );
 };
