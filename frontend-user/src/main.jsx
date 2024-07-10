@@ -10,7 +10,8 @@ import Login from './components/pages/Login.jsx';
 import Register from './components/pages/Register.jsx';
 import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import ErrorPage from "./error-page";
+import ErrorPage from "./components/errors/error-page.jsx";
+import Error404 from './components/errors/404.jsx';
 
 const router = createBrowserRouter([
   {
@@ -36,7 +37,8 @@ const router = createBrowserRouter([
       },
       {
         path: '/posts/:postId',
-        element: <Post />
+        element: <Post />,
+        errorElement: <ErrorPage />
       },
       {
         path: '/login',
@@ -45,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: '/register',
         element: <Register />
+      },
+      {
+        path: '*',
+        element: <Error404 />
       },
     ]
   }
