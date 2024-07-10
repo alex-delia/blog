@@ -2,6 +2,7 @@ const Post = require('../models/post');
 
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
+const mongoose = require('mongoose');
 
 //display posts on GET
 exports.get_posts = asyncHandler(async (req, res, next) => {
@@ -18,7 +19,11 @@ exports.get_posts = asyncHandler(async (req, res, next) => {
 
 //display individual post on GET
 exports.get_post_by_id = asyncHandler(async (req, res, next) => {
-    const post = await Post.findById(req.params.postId).populate('author').exec();
+    let post = null;
+
+    if (mongoose.isValidObjectId(req.params.postId)) {
+        post = await Post.findById(req.params.postId).populate('author').exec();
+    }
 
     if (post === null) {
         // No results.
