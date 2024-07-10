@@ -6,7 +6,14 @@ const mongoose = require('mongoose');
 
 //display posts on GET
 exports.get_posts = asyncHandler(async (req, res, next) => {
-    const allPosts = await Post.find().populate('author').exec();
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    let allposts;
+    if (limit) {
+        allPosts = await Post.find().populate('author').limit(limit).exec();
+    } else {
+        allPosts = await Post.find().populate('author').exec();
+    }
 
     if (allPosts.length === 0) {
         const err = new Error("No Posts found");
