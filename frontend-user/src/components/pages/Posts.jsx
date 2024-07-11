@@ -1,7 +1,6 @@
 import usePostsData from "../../helpers/usePostsData";
 import { Link } from "react-router-dom";
 import PostPreview from '../common/PostPreview';
-import Error404 from "../errors/error-404";
 
 const Posts = () => {
     const { posts, error, isLoading } = usePostsData(3);
