@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import Button from '../common/Button.jsx';
 import list from '/list.svg';
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AuthContext from "../../context/AuthContext.jsx";
 
 const NavBar = () => {
     const [isOpen, setOpen] = useState(false);
+
+    const { isAuthenticated, logout, user } = useContext(AuthContext);
 
     return (
         <nav className="flex justify-between items-center py-4 border-b-2 border-gray-300">
@@ -24,14 +27,22 @@ const NavBar = () => {
                 <Link to='/'>Blog </Link>
             </h1>
 
-
-            <div className="hidden md:flex md:gap-3 md:basis-0 md:grow md:justify-end">
-                <Link to='/login'>
-                    <Button text='Login' />
-                </Link>
-                <Link to='/register'>
-                    <Button text='Register' bgColor='bg-zinc-800' hoverColor="hover:bg-zinc-700" />
-                </Link>
+            <div className="hidden md:flex md:gap-3 md:basis-0 md:grow md:justify-end md:items-center">
+                {isAuthenticated ? (
+                    <>
+                        <span>Welcome {user.firstName}</span>
+                        <Button text='Sign Out' onclick={logout} />
+                    </>
+                ) : (
+                    <>
+                        <Link to='/login'>
+                            <Button text='Log In' />
+                        </Link>
+                        <Link to='/register'>
+                            <Button text='Register' bgColor='bg-zinc-800' hoverColor="hover:bg-zinc-700" />
+                        </Link>
+                    </>
+                )}
             </div>
 
             <div className="relative md:hidden">
@@ -62,24 +73,40 @@ const NavBar = () => {
                         >
                             Posts
                         </Link>
-                        <Link
-                            to="/login"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => setOpen(!isOpen)}
-                        >
-                            Login
-                        </Link>
-                        <Link
-                            to="/register"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => setOpen(!isOpen)}
-                        >
-                            Register
-                        </Link>
+                        {isAuthenticated ? (
+                            <>
+                                <div
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:cursor-pointer"
+                                    onClick={() => {
+                                        logout();
+                                        setOpen(!isOpen);
+                                    }}
+                                >
+                                    Sign Out
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/login"
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={() => setOpen(!isOpen)}
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    to="/register"
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={() => setOpen(!isOpen)}
+                                >
+                                    Register
+                                </Link>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
-        </nav>
+        </nav >
     );
 };
 
