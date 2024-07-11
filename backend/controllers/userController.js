@@ -103,7 +103,9 @@ exports.user_create = [
 
         const payload = {
             id: user._id,
-            name: user.fullname,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            fullname: user.fullname,
             email: user.email,
             accountType: user.accountType,
             isAdmin: user.isAdmin
@@ -115,7 +117,9 @@ exports.user_create = [
             } else {
                 res.json({
                     message: "User Created",
-                    data: payload,
+                    data: {
+                        user: payload,
+                    },
                     token
                 });
             }
@@ -156,7 +160,9 @@ exports.login = [
 
             const payload = {
                 id: user._id,
-                name: user.fullname,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                fullname: user.fullname,
                 email: user.email,
                 accountType: user.accountType,
                 isAdmin: user.isAdmin
@@ -168,7 +174,7 @@ exports.login = [
                 } else {
                     res.json({
                         message: "User Logged In Successfully",
-                        data: payload,
+                        user: payload,
                         token
                     });
                 }
