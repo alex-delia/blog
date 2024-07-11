@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { axiosFetch } from '../../helpers/fetch';
 import { useParams } from 'react-router-dom';
-import { DateTime } from "luxon";
+import Error404 from '../errors/error-404';
 
 const usePostData = () => {
     const { postId } = useParams();
@@ -17,7 +17,7 @@ const Post = () => {
     const { post, error, isLoading } = usePostData();
 
     if (isLoading) return <p>Loading...</p>;
-    if (error) return <p>A network error was encountered</p>;
+    if (error) return <Error404 />;
 
     return (
         <div className="mt-5">

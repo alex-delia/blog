@@ -1,13 +1,13 @@
 import usePostsData from "../../helpers/usePostsData";
 import { Link } from "react-router-dom";
 import PostPreview from '../common/PostPreview';
+import Error404 from "../errors/error-404";
 
 const Posts = () => {
     const { posts, error, isLoading } = usePostsData(3);
 
     if (isLoading) return <p>Loading...</p>;
-    if (error) return <p>A network error was encountered</p>;
-
+    if (error) return <p>No posts were found.</p>;
 
     return (
         <div className="mt-5">
