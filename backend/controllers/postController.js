@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 exports.get_posts = asyncHandler(async (req, res, next) => {
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
 
-    let allposts;
+    let allPosts;
     if (limit) {
         allPosts = await Post.find().populate('author').limit(limit).exec();
     } else {
