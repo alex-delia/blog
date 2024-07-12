@@ -30,7 +30,11 @@ const postSchema = new Schema({
 );
 
 postSchema.virtual('url').get(function () {
-    return `/post/${this._id}`;
+    return `/posts/${this._id}`;
+});
+
+postSchema.set('toJSON', {
+    virtuals: true
 });
 
 module.exports = mongoose.model('Post', postSchema);
