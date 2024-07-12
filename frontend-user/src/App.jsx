@@ -4,9 +4,8 @@ import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-
   return (
-    <div className='min-h-screen lg:px-40 md:px-20 px-10'>
+    <div className='min-h-screen lg:px-40 md:px-20 px-10 pb-20'>
       <NavBar />
       <Outlet />
       <ToastContainer
