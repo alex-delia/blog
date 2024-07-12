@@ -12,7 +12,7 @@ const Authors = () => {
             <h2 className="text-2xl text-center font-bold underline2">Authors</h2>
             <ul className="list-disc">
                 {authorsData.authors.map((author) => (
-                    <Link key={author._id} to={`/authors/${author._id}`}>
+                    <Link key={author._id} to={`${author.url}`}>
                         <li>
                             <span className="text-blue-600 text-2xl hover:underline">{author.fullname} - {author.postCount} posts</span>
                         </li>

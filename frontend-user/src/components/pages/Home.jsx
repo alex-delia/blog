@@ -13,7 +13,7 @@ const Home = () => {
             <h2 className="text-2xl font-bold mb-3">Recent Posts</h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
                 {postsData.posts.map((post) => (
-                    <Link key={post._id} to={`/posts/${post._id}`}>
+                    <Link key={post._id} to={`${post.url}`}>
                         <PostPreview post={post} />
                     </Link>
 

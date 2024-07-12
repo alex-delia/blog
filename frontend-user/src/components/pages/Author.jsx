@@ -18,7 +18,7 @@ const Author = () => {
         <div className="mt-5">
             <h2 className="text-3xl font-bold">{he.decode(author.fullname)}</h2>
             {author.posts.map((post) => (
-                <Link to={`/posts/${post._id}`} key={post._id}>
+                <Link to={`${post.url}`} key={post._id}>
                     <PostPreview post={post} />
                 </Link>
             ))}

@@ -2,10 +2,9 @@ import Error404 from '../errors/error-404';
 import usePostData from '../../helpers/usePostData';
 import useComments from '../../helpers/useCommentsData';
 import AuthContext from '../../context/AuthContext';
-import { useContext } from 'react';
+import { useContext, useRef, useState } from 'react';
 import Comment from '../common/Comment';
 import { Link, useParams } from 'react-router-dom';
-import { useState } from 'react';
 import axios from 'axios';
 import { useSWRConfig } from 'swr';
 import { DateTime } from "luxon";
@@ -53,7 +52,7 @@ const Post = () => {
                 <h2 className="text-2xl text-center font-bold mb-3">{post.title}</h2>
                 <div className='text-xl'>
                     <span>Written by: </span>
-                    <Link to={`/authors/${post.author._id}`}>
+                    <Link to={`${post.author.url}`}>
                         <h3 className='inline-block text-blue-600 hover:underline'>
                             {he.decode(post.author.fullname)}
                         </h3>
