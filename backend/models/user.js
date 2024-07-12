@@ -38,6 +38,19 @@ userSchema.virtual('fullname').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 
+userSchema.virtual('postCount', {
+    ref: 'Post',
+    localField: '_id',
+    foreignField: 'author',
+    count: true // only get the number of docs
+});
+
+userSchema.virtual('posts', {
+    ref: 'Post',
+    localField: '_id',
+    foreignField: 'author',
+});
+
 userSchema.set('toJSON', {
     virtuals: true
 });

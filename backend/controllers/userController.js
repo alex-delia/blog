@@ -11,6 +11,7 @@ require('dotenv').config();
 exports.get_authors = asyncHandler(async (req, res, next) => {
     const allAuthors = await User.find({ accountType: 'author' }, 'firstName lastName')
         .sort({ firstName: 1 })
+        .populate('postCount')
         .exec();
 
     if (allAuthors.length === 0) {
@@ -19,12 +20,22 @@ exports.get_authors = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ message: 'Authors retrieved successfully', data: allAuthors });
+    res.json({ message: 'Authors retrieved successfully', authors: allAuthors });
 });
 
 //GET author details
 exports.get_author_by_id = asyncHandler(async (req, res, next) => {
-    const author = await User.findById(req.params.authorId, 'firstName lastName').exec();
+    const author = await User.findById(req.params.authorId, 'firstName lastName')
+        .populate('postCount')
+        .populate({
+            path: 'posts',
+            populate: {
+                path: 'author',
+                model: 'User',
+                select: 'firstName lastName'
+            }
+        })
+        .exec();
 
     if (author === null) {
         // No results.
@@ -33,7 +44,7 @@ exports.get_author_by_id = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ message: `Author ${author.fullname} retrieved successfully`, data: author });
+    res.json({ message: `Author ${author.fullname} retrieved successfully`, author });
 });
 
 //create user on POST
@@ -117,9 +128,7 @@ exports.user_create = [
             } else {
                 res.json({
                     message: "User Created",
-                    data: {
-                        user: payload,
-                    },
+                    user: payload,
                     token
                 });
             }
