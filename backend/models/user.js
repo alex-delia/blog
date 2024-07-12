@@ -38,6 +38,10 @@ userSchema.virtual('fullname').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 
+userSchema.virtual('url').get(function () {
+    return `/authors/${thi._id}`;
+});
+
 userSchema.virtual('postCount', {
     ref: 'Post',
     localField: '_id',
