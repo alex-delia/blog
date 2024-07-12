@@ -4,6 +4,7 @@ import App from './App.jsx';
 import About from './components/pages/About.jsx';
 import Home from './components/pages/Home.jsx';
 import Authors from './components/pages/Authors.jsx';
+import Author from './components/pages/Author.jsx';
 import Posts from './components/pages/Posts.jsx';
 import Post from './components/pages/Post.jsx';
 import Login from './components/pages/Login.jsx';
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: '/authors',
         element: <Authors />
+      },
+      {
+        path: '/authors/:authorId',
+        element: <Author />
       },
       {
         path: '/posts',
