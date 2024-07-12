@@ -39,7 +39,7 @@ userSchema.virtual('fullname').get(function () {
 });
 
 userSchema.virtual('url').get(function () {
-    return `/authors/${thi._id}`;
+    return `/authors/${this._id}`;
 });
 
 userSchema.virtual('postCount', {
