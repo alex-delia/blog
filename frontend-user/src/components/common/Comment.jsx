@@ -7,18 +7,20 @@ const Comment = ({ comment, highlightClass }) => {
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     return (
-        <div className={`mb-3 ${highlightClass} rounded border-2 p-2 transition-colors duration-1000 ease-in-out`}>
-            <div className="flex items-center">
-                <p className="inline-flex items-center mr-3 text-sm font-semibold">
-                    {he.decode(comment.user.fullname)}
-                </p>
-                <p className="text-sm text-gray-600">
-                    {convertUTCToUserTimeZone(DateTime.fromISO(comment.timestamp), userTimeZone).toLocaleString(DateTime.DATE_MED)}
+        <div className='border-b-2 border-dashed border-b-slate-400'>
+            <div className={`${highlightClass} rounded-3xl p-4 transition-colors duration-1000 ease-in-out`}>
+                <div className="flex items-center">
+                    <p className="inline-flex items-center mr-3 text-sm font-semibold">
+                        {he.decode(comment.user.fullname)}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                        {convertUTCToUserTimeZone(DateTime.fromISO(comment.timestamp), userTimeZone).toLocaleString(DateTime.DATE_MED)}
+                    </p>
+                </div>
+                <p className="text-gray-800">
+                    {comment.text}
                 </p>
             </div>
-            <p className="text-gray-800">
-                {comment.text}
-            </p>
         </div>
     );
 };

@@ -63,7 +63,7 @@ const Post = () => {
     return (
         <div className="mt-5">
             <div className='mb-3 pb-2'>
-                <h2 className="text-2xl text-center font-bold mb-3">{post.title}</h2>
+                <h2 className="text-2xl text-center font-bold">{post.title}</h2>
                 <div className='text-xl'>
                     <span>Written by: </span>
                     <Link to={`${post.author.url}`}>
