@@ -19,6 +19,12 @@ const Post = () => {
     const { postId } = useParams();
     const { mutate } = useSWRConfig();
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const commentRef = useRef(null);
+    const [highlightedCommentId, setHighlightedCommentId] = useState(null);
+
+    const scrollToBottom = () => {
+        commentRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
     const config = {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -28,12 +34,20 @@ const Post = () => {
         e.preventDefault();
 
         try {
-            await axios.post(`http://localhost:3000/posts/${postId}/comments`,
+            const response = await axios.post(`http://localhost:3000/posts/${postId}/comments`,
                 { text: newComment },
                 config
             );
+            scrollToBottom();
+            const newCommentId = response.data.comment._id;
             mutate(`http://localhost:3000/posts/${postId}/comments`);
             setNewComment('');
+            setHighlightedCommentId(newCommentId);
+
+            // Reset highlight after 1000ms (1 second)
+            setTimeout(() => {
+                setHighlightedCommentId(null);
+            }, 2000);
         } catch (err) {
             console.error(err);
         }
@@ -87,10 +101,13 @@ const Post = () => {
                         {' to leave a comment.'}
                     </div>
                 }
-                {commentsError ? <p className='text-zinc-700 italic text-sm text-center'>Be The First To Comment...</p> :
-                    commentsData && commentsData.comments.map((comment) => (
-                        <Comment key={comment._id} comment={comment} />
-                    ))}
+                <div>
+                    {commentsError ? <p className='text-zinc-700 italic text-sm text-center'>Be The First To Comment...</p> :
+                        commentsData && commentsData.comments.map((comment) => (
+                            <Comment key={comment._id} comment={comment} highlightClass={comment._id === highlightedCommentId ? 'bg-yellow-100' : ''} />
+                        ))}
+                    <div ref={commentRef} />
+                </div>
             </div>
         </div>
     );
