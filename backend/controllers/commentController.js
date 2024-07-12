@@ -52,7 +52,7 @@ exports.comment_create = [
 
         await comment.save();
 
-        res.json({ message: 'Comment made successfully', data: comment });
+        res.json({ message: 'Comment made successfully', comment });
     })
 ];
 
