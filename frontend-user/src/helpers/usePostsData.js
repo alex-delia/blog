@@ -6,7 +6,7 @@ const usePostsData = (limit = null) => {
         dedupingInterval: 1000 * 60 * 10, // cache for 10 minutes});
     });
 
-    return { posts: data, error, isLoading };
+    return { postsData: data, error, isLoading };
 };
 
 export default usePostsData;
