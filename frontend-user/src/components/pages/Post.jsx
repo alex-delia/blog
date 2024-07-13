@@ -82,7 +82,7 @@ const Post = () => {
             <div className='mt-3'>
                 <h2 className='font-bold text-2xl mb-2'>Comments {commentsData ? `(${commentsData.comments.length})` : ''}</h2>
                 {isAuthenticated ?
-                    <form className="mb-6" onSubmit={handleSubmit}>
+                    <form className="mb-3" onSubmit={handleSubmit}>
                         <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200">
                             <label htmlFor="comment" className="sr-only">Your comment</label>
                             <textarea id="comment" rows="6" value={newComment} onChange={e => setNewComment(e.target.value)}
