@@ -113,11 +113,17 @@ exports.user_create = [
         await user.save();
 
         const payload = {
+            sub: user._id,
+            name: user.fullname,
+            accountType: user.accountType,
+            isAdmin: user.isAdmin
+        };
+
+        const returnUser = {
             id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
             fullname: user.fullname,
-            email: user.email,
             accountType: user.accountType,
             isAdmin: user.isAdmin
         };
@@ -127,8 +133,8 @@ exports.user_create = [
                 res.status(403).json(err);
             } else {
                 res.json({
-                    message: "User Created",
-                    user: payload,
+                    message: "User Created and logged in.",
+                    user: returnUser,
                     token
                 });
             }
@@ -168,11 +174,17 @@ exports.login = [
             }
 
             const payload = {
+                sub: user._id,
+                name: user.fullname,
+                accountType: user.accountType,
+                isAdmin: user.isAdmin
+            };
+
+            const returnUser = {
                 id: user._id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 fullname: user.fullname,
-                email: user.email,
                 accountType: user.accountType,
                 isAdmin: user.isAdmin
             };
@@ -183,7 +195,7 @@ exports.login = [
                 } else {
                     res.json({
                         message: "User Logged In Successfully",
-                        user: payload,
+                        user: returnUser,
                         token
                     });
                 }
@@ -203,7 +215,6 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
         data: {
             _id: user.id,
             name: user.fullName,
-            email: user.email
         }
     });
 });
