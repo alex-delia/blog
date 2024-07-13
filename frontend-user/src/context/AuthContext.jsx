@@ -24,11 +24,15 @@ export const AuthProvider = ({ children }) => {
         toast.success('Log In Success');
     };
 
-    const logout = () => {
+    const logout = (noToast) => {
         setIsAuthenticated(false);
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        if (noToast === true) {
+            console.log("Test");
+            return;
+        }
         toast.success('Log Out Success');
     };
 

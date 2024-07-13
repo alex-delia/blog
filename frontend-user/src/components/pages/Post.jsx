@@ -4,7 +4,7 @@ import useComments from '../../helpers/useCommentsData';
 import AuthContext from '../../context/AuthContext';
 import { useContext, useRef, useState } from 'react';
 import Comment from '../common/Comment';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSWRConfig } from 'swr';
 import { DateTime } from "luxon";
@@ -14,13 +14,15 @@ import he from 'he';
 const Post = () => {
     const { postData, error: postError, isLoading: postLoading } = usePostData();
     const { commentsData, error: commentsError } = useComments();
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, logout } = useContext(AuthContext);
     const [newComment, setNewComment] = useState('');
     const { postId } = useParams();
     const { mutate } = useSWRConfig();
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const commentRef = useRef(null);
     const [highlightedCommentId, setHighlightedCommentId] = useState(null);
+    const navigate = useNavigate();
+
 
     const scrollToBottom = () => {
         commentRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,6 +51,10 @@ const Post = () => {
                 setHighlightedCommentId(null);
             }, 2000);
         } catch (err) {
+            if (err.response.status === 401) {
+                logout(true);
+                navigate('/login');
+            }
             console.error(err);
         }
     };
