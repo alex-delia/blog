@@ -1,6 +1,5 @@
 import { useState, useContext } from "react";
 import { useNavigate, Navigate, Link } from "react-router-dom";
-import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 
 const Login = () => {
@@ -20,13 +19,11 @@ const Login = () => {
         setError(null);
 
         try {
-            const response = await axios.post('http://localhost:3000/login', { email, password });
-            const { token } = response.data;
-            login(response.data.user, token);
-            navigate(-1);
+            await login(email, password);
+            navigate('/');
         } catch (err) {
             console.error(err);
-            setError('Invalid username or password');
+            setError(err.message === 'Access denied: You do not have the required account type.' ? err.message : err.response.data.message);
         }
     };
 

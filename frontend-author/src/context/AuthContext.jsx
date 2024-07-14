@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -7,6 +8,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -15,12 +17,25 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const login = (userData, token) => {
-        setIsAuthenticated(true);
-        setUser(userData);
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
-        toast.success('Log In Success');
+    const login = async (email, password) => {
+        try {
+            const response = await axios.post('http://localhost:3000/login', { email, password });
+            const { token, user } = response.data;
+
+            // Check if user has 'author' accountType
+            if (user.accountType !== 'author') {
+                throw new Error('Access denied: You do not have the required account type.');
+            }
+
+            setIsAuthenticated(true);
+            setUser(user);
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            toast.success('Log In Success');
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
     };
 
     const logout = (noToast) => {
