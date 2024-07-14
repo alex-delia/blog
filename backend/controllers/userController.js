@@ -113,7 +113,7 @@ exports.user_create = [
         await user.save();
 
         const payload = {
-            sub: user._id,
+            id: user._id,
             name: user.fullname,
             accountType: user.accountType,
             isAdmin: user.isAdmin
@@ -133,7 +133,7 @@ exports.user_create = [
                 res.status(403).json(err);
             } else {
                 res.json({
-                    message: "User Created and logged in.",
+                    message: "User Created",
                     user: returnUser,
                     token
                 });
@@ -172,9 +172,8 @@ exports.login = [
                 err.status = 401;
                 return next(err);
             }
-
             const payload = {
-                sub: user._id,
+                id: user._id,
                 name: user.fullname,
                 accountType: user.accountType,
                 isAdmin: user.isAdmin
@@ -215,6 +214,7 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
         data: {
             _id: user.id,
             name: user.fullName,
+            email: user.email
         }
     });
 });
