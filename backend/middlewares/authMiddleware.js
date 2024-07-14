@@ -18,7 +18,8 @@ function authenticateJWT(req, res, next) {
             error.status = 401;
             return next(error);
         }
-        req.user = decodedToken; // Attach decoded token payload to request object
+        req.user = { ...decodedToken, id: decodedToken.sub }; // Map 'sub' to 'id'
+        delete req.user.sub; // Remove 'sub' field
         next();
     });
 }

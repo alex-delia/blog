@@ -113,7 +113,7 @@ exports.user_create = [
         await user.save();
 
         const payload = {
-            id: user._id,
+            sub: user._id,
             name: user.fullname,
             accountType: user.accountType,
             isAdmin: user.isAdmin
@@ -173,7 +173,7 @@ exports.login = [
                 return next(err);
             }
             const payload = {
-                id: user._id,
+                sub: user._id,
                 name: user.fullname,
                 accountType: user.accountType,
                 isAdmin: user.isAdmin
