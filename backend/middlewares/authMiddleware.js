@@ -24,6 +24,29 @@ function authenticateJWT(req, res, next) {
     });
 }
 
+function optionalAuthenticateJWT(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
+
+    console.log(req.headers);
+
+    if (!token) {
+        return next();
+    }
+
+    console.log('Test');
+
+    jwt.verify(token, process.env.JWT_KEY, (err, decodedToken) => {
+        if (err) {
+            const error = new Error("Invalid Token");
+            error.status = 401;
+            return next(error);
+        }
+        req.user = { ...decodedToken, id: decodedToken.sub }; // Map 'sub' to 'id'
+        delete req.user.sub; // Remove 'sub' field
+        next();
+    });
+}
+
 function requireAuthor(req, res, next) {
     const currentUser = req.user;
     if (currentUser && currentUser.accountType === 'author') {
@@ -104,6 +127,7 @@ const modifyPostAuthorization = asyncHandler(async (req, res, next) => {
 
 module.exports = {
     authenticateJWT,
+    optionalAuthenticateJWT,
     requireAuthor,
     deleteCommentAuthorization,
     deleteUserAuthorization,

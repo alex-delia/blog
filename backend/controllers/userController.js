@@ -42,7 +42,13 @@ exports.get_author_by_id = asyncHandler(async (req, res, next) => {
 
 //GET author posts
 exports.get_author_posts = asyncHandler(async (req, res, next) => {
-    const posts = await Post.find({ author: req.params.authorId, isPublished: true }).populate('author').exec();
+    let posts;
+
+    if (req.user && req.user.id === req.params.authorId) {
+        posts = await Post.find({ author: req.params.authorId }).populate('author').exec();
+    } else {
+        posts = await Post.find({ author: req.params.authorId, isPublished: true }).populate('author').exec();
+    }
 
     if (posts.length === 0) {
         const err = new Error("No Posts found");
