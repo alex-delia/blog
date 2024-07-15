@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ErrorPage from './components/errors/Error.jsx';
 import Login from './components/pages/Login.jsx';
@@ -18,8 +18,8 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
+      { index: true, element: <Navigate to="/posts" replace /> },
       {
-        index: true,
         path: '/posts',
         element: <Posts />
       },
