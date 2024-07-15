@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import ErrorPage from './components/errors/Error.jsx';
 import Login from './components/pages/Login.jsx';
 import { ToastContainer, Flip } from "react-toastify";
+import NewPostForm from './components/pages/NewPostForm.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 
@@ -13,10 +14,21 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <ErrorPage />
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        path: '/posts',
+        element: <h1>Posts</h1>
+      },
+      {
+        path: '/posts/new',
+        element: <NewPostForm />
+      }
+    ]
   },
   {
-    path: 'login',
+    path: '/login',
     element: <Login />
   }
 
