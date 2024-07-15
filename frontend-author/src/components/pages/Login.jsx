@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate, Navigate, Link } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 
 const Login = () => {
@@ -44,7 +44,7 @@ const Login = () => {
                 </h2>
             </div>
 
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md lg:max-w-sm">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
@@ -102,13 +102,6 @@ const Login = () => {
                         </button>
                     </div>
                 </form>
-
-                <p className="mt-10 text-center text-sm text-gray-500">
-                    Not a member?{' '}
-                    <Link to='/register' className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                        Register
-                    </Link>
-                </p>
             </div>
         </div>
     );
