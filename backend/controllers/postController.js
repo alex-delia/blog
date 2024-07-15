@@ -90,16 +90,19 @@ exports.post_create = [
 //update post on PUT
 exports.post_update = [
     body('title')
+        .optional()
         .trim()
         .isLength({ min: 1 })
         .withMessage('Title Must Be Specified')
         .escape(),
     body('description')
+        .optional()
         .trim()
         .isLength({ min: 1, max: 500 })
         .withMessage('Description must be between 1-500 characters.')
         .escape(),
     body('text')
+        .optional()
         .trim()
         .isLength({ min: 1 })
         .withMessage('Post Text Must Be Specified')
@@ -117,17 +120,12 @@ exports.post_update = [
 
         const postId = req.postToModify.id;
 
-        const post = new Post({
-            _id: postId,
-            title: req.body.title,
-            text: req.body.text,
-            description: req.body.description,
-            author: req.postToModify.author,
-            isPublished: req.postToModify.isPublished,
+        const update = {
+            ...req.body,
             updatedBy: req.user.id
-        });
+        };
 
-        const updatedPost = await Post.findByIdAndUpdate(postId, post, { new: true, runValidators: true });
+        const updatedPost = await Post.findByIdAndUpdate(postId, update);
 
         res.json({ message: 'Post updated successfully', data: updatedPost });
     })
