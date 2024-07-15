@@ -10,6 +10,7 @@ import { useSWRConfig } from 'swr';
 import { DateTime } from "luxon";
 import convertUTCToUserTimeZone from '../../helpers/convertUTCtoLocal';
 import he from 'he';
+import DOMPurify from 'dompurify';
 
 const Post = () => {
     const { postData, error: postError, isLoading: postLoading } = usePostData();
@@ -64,6 +65,17 @@ const Post = () => {
 
     const post = postData.post;
 
+    // Decode the HTML entities
+    const decodedTitle = he.decode(post.title);
+    const decodedText = he.decode(post.text);
+
+    // Sanitize the decoded HTML
+    const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
+    const sanitizedText = DOMPurify.sanitize(decodedText);
+
+    post.title = sanitizedTitle;
+    post.text = sanitizedText;
+
     const postDate = convertUTCToUserTimeZone(DateTime.fromISO(post.createdAt), userTimeZone).toLocaleString(DateTime.DATE_MED);
 
     return (
@@ -82,7 +94,7 @@ const Post = () => {
             </div>
 
             <div className='border-b-2'>
-                <p className="text-lg mb-3">{post.text}</p>
+                <div className="text-lg mb-3" dangerouslySetInnerHTML={{ __html: post.text }} />
             </div>
 
             <div className='mt-3'>

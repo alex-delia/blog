@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
     "axios": "^1.7.2",
+    "dompurify": "^3.1.6",
     "he": "^1.2.0",
     "luxon": "^3.4.4",
     "prop-types": "^15.8.1",
