@@ -3,11 +3,11 @@ const router = express.Router();
 
 const user_controller = require('../controllers/userController');
 
-//GET request for displaying author detail
-router.get('/:authorId', user_controller.get_author_by_id);
-
 //GET request for displaying author posts
 router.get('/:authorId/posts', user_controller.get_author_posts);
+
+//GET request for displaying author detail
+router.get('/:authorId', user_controller.get_author_by_id);
 
 //GET request for displaying all authors
 router.get('/', user_controller.get_authors);

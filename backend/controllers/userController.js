@@ -28,14 +28,6 @@ exports.get_authors = asyncHandler(async (req, res, next) => {
 exports.get_author_by_id = asyncHandler(async (req, res, next) => {
     const author = await User.findById(req.params.authorId, 'firstName lastName')
         .populate('postCount')
-        .populate({
-            path: 'posts',
-            populate: {
-                path: 'author',
-                model: 'User',
-                select: 'firstName lastName'
-            }
-        })
         .exec();
 
     if (author === null) {
@@ -48,9 +40,9 @@ exports.get_author_by_id = asyncHandler(async (req, res, next) => {
     res.json({ message: `Author ${author.fullname} retrieved successfully`, author });
 });
 
-//GET author details
+//GET author posts
 exports.get_author_posts = asyncHandler(async (req, res, next) => {
-    const posts = await Post.find({ author: req.params.authorId }).exec();
+    const posts = await Post.find({ author: req.params.authorId, isPublished: true }).populate('author').exec();
 
     if (posts.length === 0) {
         const err = new Error("No Posts found");

@@ -46,13 +46,10 @@ userSchema.virtual('postCount', {
     ref: 'Post',
     localField: '_id',
     foreignField: 'author',
-    count: true // only get the number of docs
-});
-
-userSchema.virtual('posts', {
-    ref: 'Post',
-    localField: '_id',
-    foreignField: 'author',
+    count: true, // only get the number of docs
+    options: {
+        match: { isPublished: true }
+    }
 });
 
 userSchema.set('toJSON', {

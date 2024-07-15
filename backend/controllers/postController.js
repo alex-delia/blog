@@ -9,9 +9,9 @@ exports.get_posts = asyncHandler(async (req, res, next) => {
 
     let allPosts;
     if (limit) {
-        allPosts = await Post.find().populate('author').limit(limit).exec();
+        allPosts = await Post.find({ isPublished: true }).populate('author').limit(limit).exec();
     } else {
-        allPosts = await Post.find().populate('author').exec();
+        allPosts = await Post.find({ isPublished: true }).populate('author').exec();
     }
 
     if (allPosts.length === 0) {
@@ -25,7 +25,10 @@ exports.get_posts = asyncHandler(async (req, res, next) => {
 
 //display individual post on GET
 exports.get_post_by_id = asyncHandler(async (req, res, next) => {
-    const post = await Post.findById(req.params.postId).populate('author').exec();
+    const post = await Post.findOne({
+        _id: req.params.postId,
+        isPublished: true
+    }).populate('author').exec();
 
     if (post === null) {
         // No results.
@@ -44,15 +47,15 @@ exports.post_create = [
         .isLength({ min: 1 })
         .withMessage('Title Must Be Specified')
         .escape(),
-    body('text')
-        .trim()
-        .isLength({ min: 1 })
-        .withMessage('Post Text Must Be Specified')
-        .escape(),
     body('description')
         .trim()
         .isLength({ min: 1, max: 500 })
         .withMessage('Description must be between 1-500 characters.')
+        .escape(),
+    body('text')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Post Text Must Be Specified')
         .escape(),
 
     asyncHandler(async (req, res, next) => {
@@ -91,15 +94,15 @@ exports.post_update = [
         .isLength({ min: 1 })
         .withMessage('Title Must Be Specified')
         .escape(),
-    body('text')
-        .trim()
-        .isLength({ min: 1 })
-        .withMessage('Post Text Must Be Specified')
-        .escape(),
     body('description')
         .trim()
         .isLength({ min: 1, max: 500 })
         .withMessage('Description must be between 1-500 characters.')
+        .escape(),
+    body('text')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Post Text Must Be Specified')
         .escape(),
 
     asyncHandler(async (req, res, next) => {
