@@ -7,6 +7,8 @@ import ErrorPage from './components/errors/Error.jsx';
 import Login from './components/pages/Login.jsx';
 import { ToastContainer, Flip } from "react-toastify";
 import NewPostForm from './components/pages/NewPostForm.jsx';
+import Posts from './components/pages/Posts.jsx';
+
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 
@@ -19,7 +21,7 @@ const router = createBrowserRouter([
       {
         index: true,
         path: '/posts',
-        element: <h1>Posts</h1>
+        element: <Posts />
       },
       {
         path: '/posts/new',

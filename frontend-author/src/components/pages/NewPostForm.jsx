@@ -1,13 +1,26 @@
 import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Button from '../common/Button';
+import { useSWRConfig } from 'swr';
+import { useContext } from 'react';
+import AuthContext from '../../context/AuthContext';
 
 export default function NewPostForm() {
+    const { isAuthenticated, loading, user } = useContext(AuthContext);
     const editorRef = useRef(null);
     const navigate = useNavigate();
+    const { mutate } = useSWRConfig();
     const [title, setTitle] = useState('');
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!isAuthenticated) {
+        return <Navigate to='login' replace />;
+    }
 
     const config = {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -20,6 +33,7 @@ export default function NewPostForm() {
                     { title, text: editorRef.current.getContent() },
                     config
                 );
+                mutate(`http://localhost:3000/authors/${user.id}/posts`);
                 navigate('/posts');
                 console.log(response.data);
             } catch (err) {
