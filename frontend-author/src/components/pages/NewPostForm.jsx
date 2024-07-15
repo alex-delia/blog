@@ -13,6 +13,7 @@ export default function NewPostForm() {
     const navigate = useNavigate();
     const { mutate } = useSWRConfig();
     const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [error, setError] = useState('');
 
     if (loading) {
@@ -31,7 +32,7 @@ export default function NewPostForm() {
         if (editorRef.current) {
             try {
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/posts`,
-                    { title, text: editorRef.current.getContent() },
+                    { title, description, text: editorRef.current.getContent() },
                     config
                 );
                 mutate(`http://localhost:3000/authors/${user.id}/posts`);
@@ -62,8 +63,28 @@ export default function NewPostForm() {
                     />
                 </div>
             </div>
+            <div className='my-5'>
+                <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
+                    Description
+                </label>
+                <div className="mt-2">
+                    <input
+                        type="text"
+                        id="description"
+                        name="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                </div>
+            </div>
             <div className='mb-5'>
+                <label htmlFor="postText" className="block text-sm font-medium leading-6 text-gray-900">
+                    Post
+                </label>
                 <Editor
+                    id='postText'
                     apiKey={import.meta.env.VITE_TINY_KEY}
                     onInit={(_evt, editor) => editorRef.current = editor}
                     init={{
@@ -82,7 +103,7 @@ export default function NewPostForm() {
                     }}
                 />
             </div>
-            {error && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
+            {(error && error.response.data.details) && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
             <Button onClick={handleSubmit} text='Submit' bgColor='bg-green-600' hoverColor='hover:bg-green-500' />
         </>
     );

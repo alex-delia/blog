@@ -23,14 +23,11 @@ export default function Posts() {
     postsData.posts.forEach((post) => {
         // Decode the HTML entities
         const decodedTitle = he.decode(post.title);
-        const decodedText = he.decode(post.text);
 
         // Sanitize the decoded HTML
         const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
-        const sanitizedText = DOMPurify.sanitize(decodedText);
 
         post.title = sanitizedTitle;
-        post.text = sanitizedText;
     });
 
     return (
@@ -39,7 +36,7 @@ export default function Posts() {
             {postsData.posts.map((post) => (
                 <div key={post.id} className="py-4 border-b">
                     <h2 className="font-bold">{post.title}</h2>
-                    <div dangerouslySetInnerHTML={{ __html: post.text.substring(0, 100) }}></div>
+                    <p>{post.description}</p>
                 </div>
             ))}
         </div>
