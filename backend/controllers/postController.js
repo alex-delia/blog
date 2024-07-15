@@ -49,6 +49,11 @@ exports.post_create = [
         .isLength({ min: 1 })
         .withMessage('Post Text Must Be Specified')
         .escape(),
+    body('description')
+        .trim()
+        .isLength({ min: 1, max: 500 })
+        .withMessage('Description must be between 1-500 characters.')
+        .escape(),
 
     asyncHandler(async (req, res, next) => {
         const errors = validationResult(req);
@@ -63,6 +68,7 @@ exports.post_create = [
         const post = new Post({
             title: req.body.title,
             text: req.body.text,
+            description: req.body.description,
             author: req.user.id
         });
 
@@ -90,6 +96,12 @@ exports.post_update = [
         .isLength({ min: 1 })
         .withMessage('Post Text Must Be Specified')
         .escape(),
+    body('description')
+        .trim()
+        .isLength({ min: 1, max: 500 })
+        .withMessage('Description must be between 1-500 characters.')
+        .escape(),
+
     asyncHandler(async (req, res, next) => {
         const errors = validationResult(req);
 
@@ -106,6 +118,7 @@ exports.post_update = [
             _id: postId,
             title: req.body.title,
             text: req.body.text,
+            description: req.body.description,
             author: req.postToModify.author,
             isPublished: req.postToModify.isPublished,
             updatedBy: req.user.id

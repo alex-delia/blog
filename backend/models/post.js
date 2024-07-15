@@ -16,6 +16,10 @@ const postSchema = new Schema({
         type: String,
         required: true,
     },
+    desription: {
+        type: String,
+        required: true,
+    },
     isPublished: {
         type: Boolean,
         required: true,
