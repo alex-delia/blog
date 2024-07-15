@@ -6,7 +6,7 @@ const Home = () => {
     const { postsData, error, isLoading } = usePostsData(5);
 
     if (isLoading) return <p>Loading...</p>;
-    if (error) return <p>A network error was encountered</p>;
+    if (error) return <p>No Posts Found</p>;
 
     return (
         <div className="mt-5">

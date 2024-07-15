@@ -27,7 +27,7 @@ const PostPreview = ({ post }) => {
                     convertUTCToUserTimeZone(DateTime.fromISO(post.createdAt), userTimeZone).toLocaleString(DateTime.DATE_FULL) :
                     'Updated: ' + convertUTCToUserTimeZone(DateTime.fromISO(post.updatedAt), userTimeZone).toLocaleString(DateTime.DATE_FULL)}
             </p>
-            <div className='text-sm text-gray-500' dangerouslySetInnerHTML={{ __html: post.text.substring(0, 150) }}></div>
+            <div className='text-sm text-gray-500'>{post.description}</div>
         </div>
     );
 };
