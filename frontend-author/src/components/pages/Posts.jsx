@@ -22,19 +22,22 @@ export default function Posts() {
 
     postsData.posts.forEach((post) => {
         // Decode the HTML entities
-        const decodedHTML = he.decode(post.text);
+        const decodedTitle = he.decode(post.title);
+        const decodedText = he.decode(post.text);
 
         // Sanitize the decoded HTML
-        const sanitizedContent = DOMPurify.sanitize(decodedHTML);
+        const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
+        const sanitizedText = DOMPurify.sanitize(decodedText);
 
-        post.text = sanitizedContent;
+        post.title = sanitizedTitle;
+        post.text = sanitizedText;
     });
 
     return (
         <div className="mt-5">
             <h1 className="text-2xl font-bold mb-4">Posts</h1>
             {postsData.posts.map((post) => (
-                <div key={post.id} className="mb-4">
+                <div key={post.id} className="py-4 border-b">
                     <h2 className="font-bold">{post.title}</h2>
                     <div dangerouslySetInnerHTML={{ __html: post.text.substring(0, 100) }}></div>
                 </div>

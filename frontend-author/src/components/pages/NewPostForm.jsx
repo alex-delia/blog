@@ -13,6 +13,7 @@ export default function NewPostForm() {
     const navigate = useNavigate();
     const { mutate } = useSWRConfig();
     const [title, setTitle] = useState('');
+    const [error, setError] = useState('');
 
     if (loading) {
         return <div>Loading...</div>;
@@ -37,6 +38,7 @@ export default function NewPostForm() {
                 navigate('/posts');
                 console.log(response.data);
             } catch (err) {
+                setError(err);
                 console.error(err);
             }
         }
@@ -80,6 +82,7 @@ export default function NewPostForm() {
                     }}
                 />
             </div>
+            {error && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
             <Button onClick={handleSubmit} text='Submit' bgColor='bg-green-600' hoverColor='hover:bg-green-500' />
         </>
     );
