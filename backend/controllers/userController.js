@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Post = require('../models/post');
 
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
@@ -45,6 +46,19 @@ exports.get_author_by_id = asyncHandler(async (req, res, next) => {
     }
 
     res.json({ message: `Author ${author.fullname} retrieved successfully`, author });
+});
+
+//GET author details
+exports.get_author_posts = asyncHandler(async (req, res, next) => {
+    const posts = await Post.find({ author: req.params.authorId }).exec();
+
+    if (posts.length === 0) {
+        const err = new Error("No Posts found");
+        err.status = 404;
+        return next(err);
+    }
+
+    res.json({ message: `Posts for ${req.params.authorId} retrieved successfully`, posts });
 });
 
 //create user on POST
