@@ -125,9 +125,9 @@ exports.post_update = [
             updatedBy: req.user.id
         };
 
-        const updatedPost = await Post.findByIdAndUpdate(postId, update);
+        const updatedPost = await Post.findByIdAndUpdate(postId, update, { new: true });
 
-        res.json({ message: 'Post updated successfully', data: updatedPost });
+        res.json({ message: 'Post updated successfully', post: updatedPost });
     })
 ];
 
