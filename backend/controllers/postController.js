@@ -25,10 +25,9 @@ exports.get_posts = asyncHandler(async (req, res, next) => {
 
 //display individual post on GET
 exports.get_post_by_id = asyncHandler(async (req, res, next) => {
-    const post = await Post.findOne({
-        _id: req.params.postId,
-        isPublished: true
-    }).populate('author').exec();
+    const post = await Post.findOne({ _id: req.params.postId, })
+        .populate('author')
+        .exec();
 
     if (post === null) {
         // No results.
@@ -37,8 +36,19 @@ exports.get_post_by_id = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
+    if (post.isPublished === false) {
+        if (req.user && req.user.id === post.author.id) {
+            return res.json({ message: `Post retrieved successfully`, post });
+        } else {
+            const err = new Error("Post not found");
+            err.status = 404;
+            return next(err);
+        }
+    }
+
     res.json({ message: `Post retrieved successfully`, post });
 });
+
 
 //create post on POST
 exports.post_create = [
