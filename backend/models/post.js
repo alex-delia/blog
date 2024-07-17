@@ -25,12 +25,19 @@ const postSchema = new Schema({
         required: true,
         default: false,
     },
+    createdAt: {
+        type: Date,
+        immutable: true
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    },
     updatedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',
     },
 },
-    { timestamps: true }
 );
 
 postSchema.virtual('url').get(function () {
@@ -40,5 +47,20 @@ postSchema.virtual('url').get(function () {
 postSchema.set('toJSON', {
     virtuals: true
 });
+
+postSchema.pre('save', function (next) {
+    if (!this.createdAt) {
+        console.log('CREATED');
+        this.createdAt = Date.now();
+        this.updatedAt = this.createdAt;
+        next();
+    }
+
+    if (this.isModified('title') || this.isModified('text') || this.isModified('description')) {
+        this.updatedAt = Date.now();
+    }
+    next();
+});
+
 
 module.exports = mongoose.model('Post', postSchema);

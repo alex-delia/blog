@@ -9,9 +9,16 @@ exports.get_posts = asyncHandler(async (req, res, next) => {
 
     let allPosts;
     if (limit) {
-        allPosts = await Post.find({ isPublished: true }).populate('author').limit(limit).exec();
+        allPosts = await Post.find({ isPublished: true })
+            .sort({ createdAt: -1 })
+            .populate('author')
+            .limit(limit)
+            .exec();
     } else {
-        allPosts = await Post.find({ isPublished: true }).populate('author').exec();
+        allPosts = await Post.find({ isPublished: true })
+            .sort({ createdAt: -1 })
+            .populate('author')
+            .exec();
     }
 
     if (allPosts.length === 0) {
@@ -130,14 +137,27 @@ exports.post_update = [
 
         const postId = req.postToModify.id;
 
-        const update = {
-            ...req.body,
-            updatedBy: req.user.id
-        };
+        // Find the post by ID
+        const post = await Post.findById(postId);
 
-        const updatedPost = await Post.findByIdAndUpdate(postId, update, { new: true });
+        if (!post) {
+            const err = new Error('Post not found');
+            err.status = 404;
+            return next(err);
+        }
 
-        res.json({ message: 'Post updated successfully', post: updatedPost });
+        // Update the document dynamically based on req.body
+        Object.keys(req.body).forEach((key) => {
+            if (key !== '_id' && key !== 'updatedBy') {
+                post[key] = req.body[key];
+            }
+        });
+
+        // Save the updated post
+        await post.save();
+
+
+        res.json({ message: 'Post updated successfully', post });
     })
 ];
 
