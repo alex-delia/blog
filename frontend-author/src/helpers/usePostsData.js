@@ -1,18 +1,12 @@
-import useSWR from 'swr';
-import { axiosFetch } from './axiosFetch';
+import { useQuery } from '@tanstack/react-query';
+import fetchPosts from './fetchPosts';
 
-const usePostsData = (authorId) => {
-    const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    };
-
-    const { data, error, isLoading } = useSWR(`http://localhost:3000/authors/${authorId}/posts`,
-        (url) => axiosFetch(url, config),
-        {
-            dedupingInterval: 1000 * 60 * 10, // cache for 10 minutes});
-        });
-
-    return { postsData: data, error, isLoading };
+const usePostsData = (userId) => {
+    return useQuery({
+        queryKey: ['posts', userId],
+        queryFn: () => fetchPosts(userId),
+        enabled: !!userId,
+    });
 };
 
 export default usePostsData;

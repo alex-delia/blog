@@ -1,22 +1,52 @@
 import usePostsData from "../../helpers/usePostsData";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import he from 'he';
 import Button from "../common/Button";
-import axios from "axios";
-import { useSWRConfig } from "swr";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import updatePost from "../../helpers/updatePost";
 
 export default function Posts() {
-    const { mutate } = useSWRConfig();
-    const navigate = useNavigate();
-
     const { isAuthenticated, loading, user } = useContext(AuthContext);
-    const { postsData, error, isLoading } = usePostsData(user.id);
+    const { isPending, isError, data, error } = usePostsData(user.id);
+    const queryClient = useQueryClient();
 
-    if (loading || isLoading) {
+    const mutation = useMutation({
+        mutationFn: ({ postId, updatedData }) => updatePost(postId, updatedData),
+        onMutate: async ({ postId, updatedData }) => {
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            await queryClient.cancelQueries({ queryKey: ['posts', user.id] });
+
+            // Snapshot the previous value
+            const previousPosts = queryClient.getQueryData(['posts', user.id]);
+
+            const newPosts = previousPosts.posts.map(post => {
+                if (post.id === postId) {
+                    return { ...post, ...updatedData };
+                }
+                return post;
+            });
+            // Optimistically update to the new value
+            queryClient.setQueryData(['posts', user.id], { ...previousPosts, posts: newPosts });
+
+
+            // Return a context object with the snapshotted value
+            return { previousPosts };
+        },
+        // If the mutation fails, use the context object to roll back
+        onError: (err, context) => {
+            queryClient.setQueryData(['posts'], context.previousPosts);
+            console.error(err);
+        },
+        // Always refetch after error or success
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['posts', user.id] });
+        },
+    });
+
+    if (loading || isPending) {
         return <div>Loading...</div>;
     }
 
@@ -24,47 +54,33 @@ export default function Posts() {
         return <Navigate to='login' replace />;
     }
 
-    if (error) return <p>No posts were found.</p>;
+    if (isError) return <p>Error: {error.message}</p>;
 
-    postsData.posts.forEach((post) => {
+    const sanitizedPosts = data.posts.map(post => {
         // Decode the HTML entities
         const decodedTitle = he.decode(post.title);
         // Sanitize the decoded HTML
         const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
-        post.title = sanitizedTitle;
+        return { ...post, title: sanitizedTitle };
     });
-
-    const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    };
-
-    const togglePublish = async (post) => {
-        try {
-            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/posts/${post.id}`,
-                { isPublished: !post.isPublished },
-                config
-            );
-            mutate(`http://localhost:3000/authors/${user.id}/posts`);
-            navigate('/posts');
-            console.log(response.data);
-        } catch (err) {
-            console.error(err);
-        }
-    };
 
     return (
         <div className="mt-5">
             <h1 className="text-2xl font-bold mb-4">Posts</h1>
-            {postsData.posts.map((post) => (
+            {sanitizedPosts.map((post) => (
                 <div key={post.id} className="flex items-center justify-between py-4 border-b">
                     <div>
                         <h2 className="font-bold">{post.title}</h2>
                         <p>{post.description}</p>
                     </div>
-                    {post.isPublished ?
-                        <Button text="Unpublish" bgColor="bg-red-500" hoverColor="hover:bg-red-400" onClick={() => togglePublish(post)} />
-                        : <Button text="Publish" bgColor="bg-green-600" hoverColor="hover:bg-green-500" onClick={() => togglePublish(post)} />
-                    }
+                    <Button
+                        text={post.isPublished ? "Unpublish" : "Publish"}
+                        bgColor={post.isPublished ? "bg-red-500" : "bg-green-600"}
+                        hoverColor={post.isPublished ? "hover:bg-red-400" : "hover:bg-green-500"}
+                        onClick={() => {
+                            mutation.mutate({ postId: post.id, updatedData: { isPublished: !post.isPublished } });
+                        }}
+                    />
                 </div>
             ))}
         </div>

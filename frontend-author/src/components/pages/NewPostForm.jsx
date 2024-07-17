@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axios';
 import Button from '../common/Button';
 import { useSWRConfig } from 'swr';
 import { useContext } from 'react';
@@ -24,16 +24,11 @@ export default function NewPostForm() {
         return <Navigate to='login' replace />;
     }
 
-    const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    };
-
     const handleSubmit = async () => {
         if (editorRef.current) {
             try {
-                const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/posts`,
+                const response = await axiosInstance.post('/posts',
                     { title, description, text: editorRef.current.getContent() },
-                    config
                 );
                 mutate(`http://localhost:3000/authors/${user.id}/posts`);
                 navigate('/posts');

@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import { updateAuthorizationHeader } from '../api/axios';
+import axiosInstance from '../api/axios';
 
 const AuthContext = createContext();
 
@@ -12,16 +13,18 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
+        const storedUser = localStorage.getItem('user');
+        if (token && storedUser) {
             setIsAuthenticated(true);
-            setUser(JSON.parse(localStorage.getItem('user')));
+            setUser(JSON.parse(storedUser));
+            updateAuthorizationHeader(token);
         }
         setLoading(false);
     }, []);
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:3000/login', { email, password });
+            const response = await axiosInstance.post('/login', { email, password });
             const { token, user } = response.data;
 
             // Check if user has 'author' accountType
@@ -29,10 +32,13 @@ export const AuthProvider = ({ children }) => {
                 throw new Error('Access denied: You do not have the required account type.');
             }
 
-            setIsAuthenticated(true);
-            setUser(user);
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
+
+            setIsAuthenticated(true);
+            setUser(user);
+            updateAuthorizationHeader(token);
+
             toast.success('Log In Success');
         } catch (err) {
             console.error(err);
@@ -45,6 +51,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        updateAuthorizationHeader(null);
         if (noToast === true) {
             console.log("Test");
             return;

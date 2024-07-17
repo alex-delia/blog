@@ -1,14 +1,6 @@
-import axios from "axios";
+import axiosInstance from "../api/axios";
 
-const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-};
-
-export default async function updatePost(post, update) {
-    await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/posts/${post.id}`,
-        update,
-        config
-    );
-
+export default async function updatePost(postId, update) {
+    const response = await axiosInstance.put(`/posts/${postId}`, update);
+    return response.data;
 }
