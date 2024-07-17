@@ -1,50 +1,17 @@
-import usePostsData from "../../helpers/usePostsData";
-import { useContext } from "react";
-import AuthContext from "../../context/AuthContext";
-import { Navigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import he from 'he';
+import { useContext } from "react";
+import { Link, Navigate } from "react-router-dom";
+import AuthContext from "../../context/AuthContext";
+import useAuthorPosts from "../../helpers/useAuthorPosts";
+import useUpdatePostsMutation from "../../helpers/useUpdatePostsMutation";
 import Button from "../common/Button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import updatePost from "../../helpers/updatePost";
 
 export default function Posts() {
     const { isAuthenticated, loading, user } = useContext(AuthContext);
-    const { isPending, isError, data, error } = usePostsData(user.id);
-    const queryClient = useQueryClient();
+    const { isPending, isError, data, error } = useAuthorPosts(user.id);
 
-    const mutation = useMutation({
-        mutationFn: ({ postId, updatedData }) => updatePost(postId, updatedData),
-        onMutate: async ({ postId, updatedData }) => {
-            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-            await queryClient.cancelQueries({ queryKey: ['posts', user.id] });
-
-            // Snapshot the previous value
-            const previousPosts = queryClient.getQueryData(['posts', user.id]);
-
-            const newPosts = previousPosts.posts.map(post => {
-                if (post.id === postId) {
-                    return { ...post, ...updatedData };
-                }
-                return post;
-            });
-            // Optimistically update to the new value
-            queryClient.setQueryData(['posts', user.id], { ...previousPosts, posts: newPosts });
-
-
-            // Return a context object with the snapshotted value
-            return { previousPosts };
-        },
-        // If the mutation fails, use the context object to roll back
-        onError: (err, context) => {
-            queryClient.setQueryData(['posts'], context.previousPosts);
-            console.error(err);
-        },
-        // Always refetch after error or success
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['posts', user.id] });
-        },
-    });
+    const mutation = useUpdatePostsMutation();
 
     if (loading || isPending) {
         return <div>Loading...</div>;
@@ -61,6 +28,7 @@ export default function Posts() {
         const decodedTitle = he.decode(post.title);
         // Sanitize the decoded HTML
         const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
+
         return { ...post, title: sanitizedTitle };
     });
 
@@ -68,21 +36,34 @@ export default function Posts() {
         <div className="mt-5">
             <h1 className="text-2xl font-bold mb-4">Posts</h1>
             {sanitizedPosts.map((post) => (
-                <div key={post.id} className="flex items-center justify-between py-4 border-b">
-                    <div>
+                < div key={post.id} className="flex justify-between gap-5 p-4 border-b hover:bg-slate-200 sm:items-center" >
+                    <div className="flex-1">
                         <h2 className="font-bold">{post.title}</h2>
                         <p>{post.description}</p>
                     </div>
-                    <Button
-                        text={post.isPublished ? "Unpublish" : "Publish"}
-                        bgColor={post.isPublished ? "bg-red-500" : "bg-green-600"}
-                        hoverColor={post.isPublished ? "hover:bg-red-400" : "hover:bg-green-500"}
-                        onClick={() => {
-                            mutation.mutate({ postId: post.id, updatedData: { isPublished: !post.isPublished } });
-                        }}
-                    />
+                    <div className="flex items-center flex-col gap-1 sm:flex-row sm:w-72 sm:justify-evenly">
+                        <Link to={`${post.url}/edit`}>
+                            <Button text="Edit"
+                                bgColor="bg-orange-600"
+                                hoverColor="hover:bg-orange-500" />
+                        </Link>
+                        <Link to={post.url}>
+                            <Button text="Preview" />
+                        </Link>
+                        <div>
+                            <Button
+                                text={post.isPublished ? "Unpublish" : "Publish"}
+                                bgColor={post.isPublished ? "bg-red-500" : "bg-green-600"}
+                                hoverColor={post.isPublished ? "hover:bg-red-400" : "hover:bg-green-500"}
+                                onClick={() => {
+                                    mutation.mutate({ postId: post.id, updatedData: { isPublished: !post.isPublished } });
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 }

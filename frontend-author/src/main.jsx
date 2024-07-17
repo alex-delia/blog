@@ -10,6 +10,8 @@ import NewPostForm from './components/pages/NewPostForm.jsx';
 import Posts from './components/pages/Posts.jsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import Post from './components/pages/Post.jsx';
+import EditPostForm from './components/pages/EditPostForm.jsx';
 
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
       {
         path: '/posts/new',
         element: <NewPostForm />
+      },
+      {
+        path: '/posts/:postId/edit',
+        element: <EditPostForm />
+      },
+      {
+        path: '/posts/:postId',
+        element: <Post />
       }
     ]
   },
