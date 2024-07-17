@@ -11,6 +11,7 @@ import { DateTime } from "luxon";
 import convertUTCToUserTimeZone from '../../helpers/convertUTCtoLocal';
 import he from 'he';
 import DOMPurify from 'dompurify';
+import './Post.css';
 
 const Post = () => {
     const { postData, error: postError, isLoading: postLoading } = usePostData();
@@ -93,8 +94,8 @@ const Post = () => {
                 <p>{postDate}</p>
             </div>
 
-            <div className='border-b-2'>
-                <div className="text-lg mb-3" dangerouslySetInnerHTML={{ __html: post.text }} />
+            <div className='border-b-2 mb-4 pb-4'>
+                <div className="blog-text text-lg mb-3" dangerouslySetInnerHTML={{ __html: post.text }} />
             </div>
 
             <div className='mt-3'>

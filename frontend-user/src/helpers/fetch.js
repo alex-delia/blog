@@ -5,7 +5,6 @@ export const axiosFetch = async (url) => {
     let config;
 
     if (token) {
-        console.log(token);
         config = {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         };
