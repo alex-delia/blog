@@ -25,21 +25,19 @@ function authenticateJWT(req, res, next) {
 }
 
 function optionalAuthenticateJWT(req, res, next) {
-    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
+    const authHeader = req.headers.authorization; // Extract token from Authorization header
+    if (!authHeader) {
+        return next();
+    }
 
-    console.log(req.headers);
-
+    const token = authHeader.split(' ')[1];
     if (!token) {
         return next();
     }
 
-    console.log('Test');
-
     jwt.verify(token, process.env.JWT_KEY, (err, decodedToken) => {
         if (err) {
-            const error = new Error("Invalid Token");
-            error.status = 401;
-            return next(error);
+            return next();
         }
         req.user = { ...decodedToken, id: decodedToken.sub }; // Map 'sub' to 'id'
         delete req.user.sub; // Remove 'sub' field
@@ -114,7 +112,7 @@ const modifyPostAuthorization = asyncHandler(async (req, res, next) => {
     }
 
     if (!currentUser.isAdmin &&
-        (currentUser.id !== postToModify.author.id.toString() && currentUser.accountType === 'author')) {
+        (currentUser.id !== postToModify.author.toString() && currentUser.accountType === 'author')) {
         const err = new Error("You do not have permission to modify/delete post");
         err.status = 404;
         return next(err);
