@@ -8,6 +8,7 @@ import convertUTCToUserTimeZone from '../../helpers/convertUTCtoLocal';
 import usePost from '../../helpers/usePost';
 import useUpdatePostMutation from '../../helpers/useUpdatePostMutation';
 import Button from '../common/Button';
+import './Post.css';
 
 const Post = () => {
     const { postId } = useParams();
@@ -55,8 +56,8 @@ const Post = () => {
                 <p>{postDate}</p>
             </div>
 
-            <div className='border-b-2 mb-4'>
-                <div className="text-lg mb-3" dangerouslySetInnerHTML={{ __html: sanitizedPost.text }} />
+            <div className='border-b-2 mb-4 pb-4'>
+                <div className="blog-text text-lg mb-3" dangerouslySetInnerHTML={{ __html: sanitizedPost.text }} />
             </div>
 
             <div className='flex gap-2'>
@@ -70,8 +71,8 @@ const Post = () => {
                 />
                 <Link to={`${post.url}/edit`}>
                     <Button text="Edit"
-                        bgColor="bg-orange-600"
-                        hoverColor="hover:bg-orange-500" />
+                        bgColor="bg-fuchsia-500"
+                        hoverColor="hover:bg-fuchsia-400" />
                 </Link>
             </div>
         </div>

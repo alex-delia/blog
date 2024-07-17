@@ -6,6 +6,8 @@ import AuthContext from "../../context/AuthContext";
 import useAuthorPosts from "../../helpers/useAuthorPosts";
 import useUpdatePostsMutation from "../../helpers/useUpdatePostsMutation";
 import Button from "../common/Button";
+import convertUTCToUserTimeZone from "../../helpers/convertUTCtoLocal";
+import { DateTime } from "luxon";
 
 export default function Posts() {
     const { isAuthenticated, loading, user } = useContext(AuthContext);
@@ -23,29 +25,37 @@ export default function Posts() {
 
     if (isError) return <p>Error: {error.message}</p>;
 
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     const sanitizedPosts = data.posts.map(post => {
         // Decode the HTML entities
         const decodedTitle = he.decode(post.title);
         // Sanitize the decoded HTML
         const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
 
-        return { ...post, title: sanitizedTitle };
+        const postDate = convertUTCToUserTimeZone(DateTime.fromISO(post.createdAt), userTimeZone).toLocaleString(DateTime.DATETIME_MED);
+
+        return { ...post, title: sanitizedTitle, createdAt: postDate };
     });
+
+
 
     return (
         <div className="mt-5">
             <h1 className="text-2xl font-bold mb-4">Posts</h1>
+
             {sanitizedPosts.map((post) => (
-                < div key={post.id} className="flex justify-between gap-5 p-4 border-b hover:bg-slate-200 sm:items-center" >
+                <div key={post.id} className="flex justify-between gap-5 p-4 border-b hover:bg-slate-200 sm:items-center" >
                     <div className="flex-1">
-                        <h2 className="font-bold">{post.title}</h2>
+                        <h2 className="inline-block font-bold">{post.title}</h2>
+                        <span className="text-sm"> - Created: {post.createdAt}</span>
                         <p>{post.description}</p>
                     </div>
                     <div className="flex items-center flex-col gap-1 sm:flex-row sm:w-72 sm:justify-evenly">
                         <Link to={`${post.url}/edit`}>
                             <Button text="Edit"
-                                bgColor="bg-orange-600"
-                                hoverColor="hover:bg-orange-500" />
+                                bgColor="bg-fuchsia-500"
+                                hoverColor="hover:bg-fuchsia-400" />
                         </Link>
                         <Link to={post.url}>
                             <Button text="Preview" />
