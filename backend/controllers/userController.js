@@ -223,7 +223,7 @@ exports.login = [
 
 //delete user on DELETE
 exports.user_delete = asyncHandler(async (req, res, next) => {
-    const userId = req.userToDelete.id;
+    const userId = req.params.userId;
 
     const user = await User.findByIdAndDelete(userId).exec();
 

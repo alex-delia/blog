@@ -135,7 +135,7 @@ exports.post_update = [
             return next(err);
         }
 
-        const postId = req.postToModify.id;
+        const postId = req.params.postId;
 
         // Find the post by ID
         const post = await Post.findById(postId);
@@ -163,9 +163,9 @@ exports.post_update = [
 
 //delete post on DELETE
 exports.post_delete = asyncHandler(async (req, res, next) => {
-    const postId = req.postToModify.id;
+    const postId = req.params.postId;
 
     const post = await Post.findByIdAndDelete(postId).exec();
 
-    res.json({ message: 'Post Deleted Successfully', data: post });
+    res.json({ message: 'Post Deleted Successfully', post });
 });

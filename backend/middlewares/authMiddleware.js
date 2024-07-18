@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 
 const Comment = require('../models/comment');
 const User = require('../models/user');
@@ -57,7 +58,15 @@ function requireAuthor(req, res, next) {
 
 const deleteCommentAuthorization = asyncHandler(async (req, res, next) => {
     const currentUser = req.user;
-    const comment = await Comment.findById(req.params.commentId);
+
+    const commentId = req.params.commentId;
+
+    // Validate the postId
+    if (!mongoose.Types.ObjectId.isValid(commentId)) {
+        return res.status(400).json({ message: 'Invalid Comment ID' });
+    }
+
+    const comment = await Comment.findById(commentId);
 
     if (!comment) {
         const err = new Error("Comment not found");
@@ -71,15 +80,20 @@ const deleteCommentAuthorization = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    // Attach comment to the request object for further processing
-    req.comment = comment;
     next();
 });
 
 const deleteUserAuthorization = asyncHandler(async (req, res, next) => {
     const currentUser = req.user;
 
-    const userToDelete = await User.findById(req.params.userId).exec();
+    const userId = req.params.userId;
+
+    // Validate the postId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid User ID' });
+    }
+
+    const userToDelete = await User.findById(userId).exec();
 
     if (!userToDelete) {
         // No results.
@@ -94,15 +108,20 @@ const deleteUserAuthorization = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    // Attach user to delete to the request object for further processing
-    req.userToDelete = userToDelete;
     next();
 });
 
 const modifyPostAuthorization = asyncHandler(async (req, res, next) => {
     const currentUser = req.user;
 
-    const postToModify = await Post.findById(req.params.postId).exec();
+    const postId = req.params.postId;
+
+    // Validate the postId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+        return res.status(400).json({ message: 'Invalid Post ID' });
+    }
+
+    const postToModify = await Post.findById(postId).exec();
 
     if (!postToModify) {
         // No results.
@@ -118,8 +137,6 @@ const modifyPostAuthorization = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    // Attach user to delete to the request object for further processing
-    req.postToModify = postToModify;
     next();
 });
 
