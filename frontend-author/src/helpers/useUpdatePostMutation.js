@@ -31,7 +31,7 @@ const useUpdatePostMutation = (postId) => {
             console.error(err);
         },
         // Always refetch after error or success
-        onSuccess: () => {
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['post', postId] });
             queryClient.invalidateQueries({ queryKey: ['posts'] });
         },

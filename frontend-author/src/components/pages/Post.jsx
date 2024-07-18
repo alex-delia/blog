@@ -61,6 +61,11 @@ const Post = () => {
             </div>
 
             <div className='flex gap-2'>
+                <Link to={`/posts`}>
+                    <Button text="Back"
+                        bgColor="bg-black"
+                        hoverColor="hover:bg-gray-800" />
+                </Link>
                 <Button
                     text={sanitizedPost.isPublished ? "Unpublish" : "Publish"}
                     bgColor={sanitizedPost.isPublished ? "bg-red-500" : "bg-green-600"}

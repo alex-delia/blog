@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams, Link } from 'react-router-dom';
 import Button from '../common/Button';
 import { useContext } from 'react';
 import AuthContext from '../../context/AuthContext';
-import updatePost from '../../helpers/updatePost';
 import usePost from '../../helpers/usePost';
 import he from 'he';
 import DOMPurify from 'dompurify';
+import useUpdatePostMutation from '../../helpers/useUpdatePostMutation';
 
 export default function EditPostForm() {
     const { postId } = useParams();
@@ -21,6 +21,8 @@ export default function EditPostForm() {
     const [error, setError] = useState('');
 
     const { isPending, isError, data, error: fetchError } = usePost(postId);
+
+    const mutation = useUpdatePostMutation(postId);
 
     useEffect(() => {
         if (data) {
@@ -56,10 +58,8 @@ export default function EditPostForm() {
     const handleUpdate = async () => {
         if (editorRef.current) {
             try {
-                await updatePost(
-                    postId,
-                    { title, description, text: editorRef.current.getContent() },
-                );
+                mutation.mutate({ updatedData: { title, description, text: editorRef.current.getContent() } });
+
                 navigate(post.url);
             } catch (err) {
                 setError(err);
@@ -134,7 +134,14 @@ export default function EditPostForm() {
                 />
             </div>
             {(error && error.response.data.details) && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
-            <Button onClick={handleUpdate} text='Update' bgColor='bg-green-600' hoverColor='hover:bg-green-500' />
+            <div className='flex gap-1'>
+                <Link to={`/posts`}>
+                    <Button text="Back"
+                        bgColor="bg-black"
+                        hoverColor="hover:bg-gray-800" />
+                </Link>
+                <Button onClick={handleUpdate} text='Update' bgColor='bg-green-600' hoverColor='hover:bg-green-500' />
+            </div>
         </>
     );
 }
