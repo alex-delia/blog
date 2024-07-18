@@ -62,7 +62,7 @@ exports.get_author_posts = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-    res.json({ message: `Posts for ${req.params.authorId} retrieved successfully`, posts });
+    res.json(posts);
 });
 
 //create user on POST
