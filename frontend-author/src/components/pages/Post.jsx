@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify';
 import he from 'he';
 import { DateTime } from 'luxon';
 import { useContext } from 'react';
-import { Navigate, useParams, Link } from 'react-router-dom';
+import { Navigate, useParams, useNavigate } from 'react-router-dom';
 import AuthContext from '../../context/AuthContext';
 import convertUTCToUserTimeZone from '../../helpers/convertUTCtoLocal';
 import usePost from '../../helpers/usePost';
@@ -12,6 +12,7 @@ import './Post.css';
 
 const Post = () => {
     const { postId } = useParams();
+    const navigate = useNavigate();
 
     const { isAuthenticated, loading } = useContext(AuthContext);
     const { isPending, isError, data, error } = usePost(postId);
@@ -43,6 +44,14 @@ const Post = () => {
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const postDate = convertUTCToUserTimeZone(DateTime.fromISO(sanitizedPost.createdAt), userTimeZone).toLocaleString(DateTime.DATE_MED);
 
+    const handleEditClick = () => {
+        navigate(`${post.url}/edit`);
+    };
+
+    const handleBackClick = () => {
+        navigate(-1);
+    };
+
     return (
         <div className="mt-5">
             <div className='mb-3 pb-2'>
@@ -61,11 +70,14 @@ const Post = () => {
             </div>
 
             <div className='flex gap-2'>
-                <Link to={`/posts`}>
-                    <Button text="Back"
-                        bgColor="bg-black"
-                        hoverColor="hover:bg-gray-800" />
-                </Link>
+                <Button text="Back"
+                    bgColor="bg-black"
+                    hoverColor="hover:bg-gray-800"
+                    onClick={handleBackClick} />
+                <Button text="Edit"
+                    bgColor="bg-fuchsia-500"
+                    hoverColor="hover:bg-fuchsia-400"
+                    onClick={handleEditClick} />
                 <Button
                     text={sanitizedPost.isPublished ? "Unpublish" : "Publish"}
                     bgColor={sanitizedPost.isPublished ? "bg-red-500" : "bg-green-600"}
@@ -74,11 +86,6 @@ const Post = () => {
                         mutation.mutate({ updatedData: { isPublished: !sanitizedPost.isPublished } });
                     }}
                 />
-                <Link to={`${post.url}/edit`}>
-                    <Button text="Edit"
-                        bgColor="bg-fuchsia-500"
-                        hoverColor="hover:bg-fuchsia-400" />
-                </Link>
             </div>
         </div>
     );

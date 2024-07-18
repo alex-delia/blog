@@ -47,8 +47,8 @@ export default function Posts() {
             {sanitizedPosts.map((post) => (
                 <div key={post.id} className="flex justify-between gap-5 p-4 border-b hover:bg-slate-200 sm:items-center" >
                     <div className="flex-1">
-                        <h2 className="inline-block font-bold">{post.title}</h2>
-                        <span className="text-sm"> - Created: {post.createdAt}</span>
+                        <h2 className="font-bold">{post.title}</h2>
+                        <p className="text-xs text-pretty mb-3">Created: {post.createdAt}</p>
                         <p>{post.description}</p>
                     </div>
                     <div className="flex items-center flex-col gap-1 sm:flex-row sm:w-72 sm:justify-evenly">

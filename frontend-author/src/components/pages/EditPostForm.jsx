@@ -59,7 +59,6 @@ export default function EditPostForm() {
         if (editorRef.current) {
             try {
                 mutation.mutate({ updatedData: { title, description, text: editorRef.current.getContent() } });
-
                 navigate(post.url);
             } catch (err) {
                 setError(err);
@@ -77,7 +76,7 @@ export default function EditPostForm() {
     return (
         <>
             <div className='my-5'>
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="title" className="block text-sm font-bold leading-6">
                     Title
                 </label>
                 <div className="mt-2">
@@ -93,7 +92,7 @@ export default function EditPostForm() {
                 </div>
             </div>
             <div className='my-5'>
-                <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="description" className="block text-sm leading-6 font-bold">
                     Description
                 </label>
                 <div className="mt-2">
@@ -109,7 +108,7 @@ export default function EditPostForm() {
                 </div>
             </div>
             <div className='mb-5'>
-                <label htmlFor="postText" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="postText" className="block text-sm font-bold leading-6">
                     Post
                 </label>
                 <Editor
@@ -135,7 +134,7 @@ export default function EditPostForm() {
             </div>
             {(error && error.response.data.details) && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
             <div className='flex gap-1'>
-                <Link to={`/posts`}>
+                <Link to='/posts'>
                     <Button text="Back"
                         bgColor="bg-black"
                         hoverColor="hover:bg-gray-800" />
