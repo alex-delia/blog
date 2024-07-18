@@ -17,11 +17,13 @@ const Author = () => {
     return (
         <div className="mt-5">
             <h2 className="text-3xl font-bold">{he.decode(author.fullname)}</h2>
-            {posts && posts.map((post) => (
-                <Link to={`${post.url}`} key={post._id}>
-                    <PostPreview post={post} />
-                </Link>
-            ))}
+            <div className="flex flex-col gap-3">
+                {posts && posts.map((post) => (
+                    <Link to={`${post.url}`} key={post._id}>
+                        <PostPreview post={post} />
+                    </Link>
+                ))}
+            </div>
             {postsError && <p>No posts found</p>}
         </div>
     );
