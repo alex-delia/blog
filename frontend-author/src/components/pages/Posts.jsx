@@ -11,6 +11,7 @@ import { DateTime } from "luxon";
 
 export default function Posts() {
     const { isAuthenticated, loading, user } = useContext(AuthContext);
+
     const { isPending, isError, data, error } = useAuthorPosts(user.id);
 
     const mutation = useUpdatePostsMutation();
@@ -27,7 +28,7 @@ export default function Posts() {
 
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const sanitizedPosts = data.posts.map(post => {
+    const sanitizedPosts = data.map(post => {
         // Decode the HTML entities
         const decodedTitle = he.decode(post.title);
         // Sanitize the decoded HTML

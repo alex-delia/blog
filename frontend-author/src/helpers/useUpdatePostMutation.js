@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import updatePost from "./updatePost";
+import { toast } from "react-toastify";
 
 const useUpdatePostMutation = (postId) => {
     const queryClient = useQueryClient();
@@ -34,7 +35,9 @@ const useUpdatePostMutation = (postId) => {
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['post', postId] });
             queryClient.invalidateQueries({ queryKey: ['posts'] });
-        },
+        }, onSuccess: () => {
+            toast.success('Post updated successfully');
+        }
     });
 };
 

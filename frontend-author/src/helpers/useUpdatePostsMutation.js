@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import updatePost from "./updatePost";
+import { toast } from "react-toastify";
 
 const useUpdatePostsMutation = () => {
     const { user } = useContext(AuthContext);
@@ -16,7 +17,7 @@ const useUpdatePostsMutation = () => {
             // Snapshot the previous value
             const previousPosts = queryClient.getQueryData(['posts', user.id]);
 
-            const newPosts = previousPosts.posts.map(post => {
+            const newPosts = previousPosts.map(post => {
                 if (post.id === postId) {
                     return { ...post, ...updatedData };
                 }
@@ -46,6 +47,9 @@ const useUpdatePostsMutation = () => {
             queryClient.invalidateQueries({ queryKey: ['post', postId] }); // Invalidate individual post query after update
             queryClient.invalidateQueries({ queryKey: ['posts', user.id] });
         },
+        onSuccess: () => {
+            toast.success('Post updated successfully');
+        }
     });
 };
 

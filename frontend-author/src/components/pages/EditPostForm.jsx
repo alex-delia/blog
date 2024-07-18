@@ -8,6 +8,8 @@ import usePost from '../../helpers/usePost';
 import he from 'he';
 import DOMPurify from 'dompurify';
 import useUpdatePostMutation from '../../helpers/useUpdatePostMutation';
+import useDeletePostMutation from '../../helpers/useDeletePostMutation';
+import ConfirmDeleteModal from '../common/ConfirmDeleteModal';
 
 export default function EditPostForm() {
     const { postId } = useParams();
@@ -19,10 +21,12 @@ export default function EditPostForm() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [error, setError] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { isPending, isError, data, error: fetchError } = usePost(postId);
 
-    const mutation = useUpdatePostMutation(postId);
+    const updateMutation = useUpdatePostMutation(postId);
+    const deleteMutation = useDeletePostMutation(postId);
 
     useEffect(() => {
         if (data) {
@@ -34,7 +38,6 @@ export default function EditPostForm() {
             const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
             setTitle(sanitizedTitle);
 
-            console.log(post.description);
             if (post.description) {
                 // Decode the HTML entities
                 const decodedDescription = he.decode(post.description);
@@ -55,10 +58,16 @@ export default function EditPostForm() {
 
     if (isError) return <p>Error: {fetchError.message}</p>;
 
+    const post = data.post;
+    // Decode the HTML entities
+    const decodedText = he.decode(post.text);
+    // Sanitize the decoded HTML
+    const sanitizedText = DOMPurify.sanitize(decodedText);
+
     const handleUpdate = async () => {
         if (editorRef.current) {
             try {
-                mutation.mutate({ updatedData: { title, description, text: editorRef.current.getContent() } });
+                updateMutation.mutate({ updatedData: { title, description, text: editorRef.current.getContent() } });
                 navigate(post.url);
             } catch (err) {
                 setError(err);
@@ -67,14 +76,27 @@ export default function EditPostForm() {
         }
     };
 
-    const post = data.post;
-    // Decode the HTML entities
-    const decodedText = he.decode(post.text);
-    // Sanitize the decoded HTML
-    const sanitizedText = DOMPurify.sanitize(decodedText);
+    const handleDelete = async () => {
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            deleteMutation.mutate();
+        } catch (err) {
+            setError(err);
+            console.error(err);
+        }
+        setIsModalOpen(false);
+    };
+
+    const handleCancelDelete = () => {
+        setIsModalOpen(false);
+    };
+
 
     return (
-        <>
+        <div>
             <div className='my-5'>
                 <label htmlFor="title" className="block text-sm font-bold leading-6">
                     Title
@@ -133,14 +155,23 @@ export default function EditPostForm() {
                 />
             </div>
             {(error && error.response.data.details) && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
-            <div className='flex gap-1'>
-                <Link to='/posts'>
-                    <Button text="Back"
-                        bgColor="bg-black"
-                        hoverColor="hover:bg-gray-800" />
-                </Link>
-                <Button onClick={handleUpdate} text='Update' bgColor='bg-green-600' hoverColor='hover:bg-green-500' />
+            <div className='flex justify-between'>
+                <div className='flex gap-1'>
+                    <Link to='/posts'>
+                        <Button text="Back"
+                            bgColor="bg-black"
+                            hoverColor="hover:bg-gray-800" />
+                    </Link>
+                    <Button onClick={handleUpdate} text='Update' bgColor='bg-green-600' hoverColor='hover:bg-green-500' />
+                </div>
+                <Button text='Delete' onClick={handleDelete} bgColor='bg-red-600' hoverColor='hover:bg-red-500' />
             </div>
-        </>
+            {isModalOpen && (
+                <ConfirmDeleteModal
+                    onConfirm={handleConfirmDelete}
+                    onCancel={handleCancelDelete}
+                />
+            )}
+        </div>
     );
 }
