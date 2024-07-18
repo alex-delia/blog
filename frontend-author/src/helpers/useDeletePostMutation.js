@@ -17,14 +17,14 @@ const useDeletePostMutation = (postId) => {
 
             const previousPosts = queryClient.getQueryData(['posts', user.id]);
 
-            queryClient.setQueryData(['posts', user.id], (old) =>
-                old.filter((post) => post.id !== postId)
-            );
+            queryClient.setQueryData(['posts', user.id], (old) => {
+                return old.filter((post) => post.id !== postId);
+            });
 
             return { previousPosts };
         },
         // If the mutation fails, use the context object to roll back
-        onError: (err, context) => {
+        onError: (err, variables, context) => {
             queryClient.setQueryData(['posts', user.id], context.previousPosts);
             console.error(err);
         },

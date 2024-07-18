@@ -10,6 +10,7 @@ import DOMPurify from 'dompurify';
 import useUpdatePostMutation from '../../helpers/useUpdatePostMutation';
 import useDeletePostMutation from '../../helpers/useDeletePostMutation';
 import ConfirmDeleteModal from '../common/ConfirmDeleteModal';
+import { toast } from 'react-toastify';
 
 export default function EditPostForm() {
     const { postId } = useParams();
@@ -27,6 +28,12 @@ export default function EditPostForm() {
 
     const updateMutation = useUpdatePostMutation(postId);
     const deleteMutation = useDeletePostMutation(postId);
+
+    useEffect(() => {
+        if (error && error.response.data.details) {
+            toast.error(error.response.data.details[0].msg);
+        }
+    }, [error]);
 
     useEffect(() => {
         if (data) {
@@ -67,7 +74,7 @@ export default function EditPostForm() {
     const handleUpdate = async () => {
         if (editorRef.current) {
             try {
-                updateMutation.mutate({ updatedData: { title, description, text: editorRef.current.getContent() } });
+                await updateMutation.mutateAsync({ updatedData: { title, description, text: editorRef.current.getContent() } });
                 navigate(post.url);
             } catch (err) {
                 setError(err);
@@ -93,7 +100,6 @@ export default function EditPostForm() {
     const handleCancelDelete = () => {
         setIsModalOpen(false);
     };
-
 
     return (
         <div>
@@ -154,7 +160,6 @@ export default function EditPostForm() {
                     }}
                 />
             </div>
-            {(error && error.response.data.details) && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
             <div className='flex justify-between'>
                 <div className='flex gap-1'>
                     <Link to='/posts'>

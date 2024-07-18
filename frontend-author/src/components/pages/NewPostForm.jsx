@@ -3,9 +3,10 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axios';
 import Button from '../common/Button';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import AuthContext from '../../context/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 export default function NewPostForm() {
     const { isAuthenticated, loading, user } = useContext(AuthContext);
@@ -17,6 +18,13 @@ export default function NewPostForm() {
 
     const queryClient = useQueryClient();
 
+    useEffect(() => {
+        if (error && error.response.data.details) {
+            toast.error(error.response.data.details[0].msg);
+        }
+    }, [error]);
+
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -24,6 +32,8 @@ export default function NewPostForm() {
     if (!isAuthenticated) {
         return <Navigate to='login' replace />;
     }
+
+
 
     const handleSubmit = async () => {
         if (editorRef.current) {
@@ -44,7 +54,7 @@ export default function NewPostForm() {
     return (
         <>
             <div className='my-5'>
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="title" className="block text-sm font-bold leading-6">
                     Title
                 </label>
                 <div className="mt-2">
@@ -60,7 +70,7 @@ export default function NewPostForm() {
                 </div>
             </div>
             <div className='my-5'>
-                <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="description" className="block text-sm leading-6 font-bold">
                     Description
                 </label>
                 <div className="mt-2">
@@ -76,7 +86,7 @@ export default function NewPostForm() {
                 </div>
             </div>
             <div className='mb-5'>
-                <label htmlFor="postText" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="postText" className="block text-sm font-bold leading-6">
                     Post
                 </label>
                 <Editor
@@ -99,7 +109,6 @@ export default function NewPostForm() {
                     }}
                 />
             </div>
-            {(error && error.response.data.details) && <p className='text-red-500 mb-4'>{error.response.data.details[0].msg}</p>}
             <Button onClick={handleSubmit} text='Submit' bgColor='bg-green-600' hoverColor='hover:bg-green-500' />
         </>
     );

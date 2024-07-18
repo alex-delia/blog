@@ -13,37 +13,43 @@ const useUpdatePostsMutation = () => {
         onMutate: async ({ postId, updatedData }) => {
             // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
             await queryClient.cancelQueries({ queryKey: ['posts', user.id] });
+            await queryClient.cancelQueries({ queryKey: ['post', postId] });
 
             // Snapshot the previous value
             const previousPosts = queryClient.getQueryData(['posts', user.id]);
+            const previousPost = queryClient.getQueryData(['post', postId]);
 
-            const newPosts = previousPosts.map(post => {
+            // Optimistically update the post
+            const updatedPosts = previousPosts.map(post => {
                 if (post.id === postId) {
-                    return { ...post, ...updatedData };
+                    const updatedPost = { ...post, ...updatedData };
+                    queryClient.setQueryData(['post', postId], { post: updatedPost });
+                    return updatedPost;
+                } else {
+                    return post;
                 }
-                return post;
-            });
-
-            // Optimistically update to the new value
-            queryClient.setQueryData(['posts', user.id], (old) =>
-                old ?
-                    {
-                        ...old,
-                        posts: newPosts
-                    }
-                    : old
+            }
             );
 
+            // Optimistically update to the new value
+            queryClient.setQueryData(['posts', user.id], updatedPosts);
+
+            queryClient.setQueryData(['post', postId], { post: { ...previousPost.post, ...updatedData } });
+
             // Return a context object with the snapshotted value
-            return { previousPosts };
+            return { previousPosts, previousPost };
         },
         // If the mutation fails, use the context object to roll back
-        onError: (err, context) => {
+        onError: (err, variables, context) => {
+            if (err.response && err.response.status === 500) {
+                toast.error(err.response.data.message);
+            }
+            // Roll back to the previous posts and individual post data
             queryClient.setQueryData(['posts', user.id], context.previousPosts);
-            console.error(err);
+            queryClient.setQueryData(['post', variables.postId], context.previousPost);
         },
         // Always refetch after error or success
-        onSettled: ({ postId }) => {
+        onSettled: ({ id: postId }) => {
             queryClient.invalidateQueries({ queryKey: ['post', postId] }); // Invalidate individual post query after update
             queryClient.invalidateQueries({ queryKey: ['posts', user.id] });
         },
