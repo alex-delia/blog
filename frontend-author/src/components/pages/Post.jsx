@@ -49,7 +49,7 @@ const Post = () => {
     };
 
     const handleBackClick = () => {
-        navigate(-1);
+        navigate('/posts');
     };
 
     return (

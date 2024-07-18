@@ -3,18 +3,19 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axios';
 import Button from '../common/Button';
-import { useSWRConfig } from 'swr';
 import { useContext } from 'react';
 import AuthContext from '../../context/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function NewPostForm() {
     const { isAuthenticated, loading, user } = useContext(AuthContext);
     const editorRef = useRef(null);
     const navigate = useNavigate();
-    const { mutate } = useSWRConfig();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [error, setError] = useState('');
+
+    const queryClient = useQueryClient();
 
     if (loading) {
         return <div>Loading...</div>;
@@ -30,7 +31,7 @@ export default function NewPostForm() {
                 const response = await axiosInstance.post('/posts',
                     { title, description, text: editorRef.current.getContent() },
                 );
-                mutate(`http://localhost:3000/authors/${user.id}/posts`);
+                queryClient.invalidateQueries(['posts', user.id]);
                 navigate('/posts');
                 console.log(response.data);
             } catch (err) {
