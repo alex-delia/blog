@@ -156,8 +156,7 @@ exports.post_update = [
         // Save the updated post
         await post.save();
 
-
-        res.json({ message: 'Post updated successfully', post });
+        res.json(post);
     })
 ];
 

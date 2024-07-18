@@ -10,15 +10,15 @@ const postSchema = new Schema({
     },
     title: {
         type: String,
-        required: true,
+        required: [true, 'Post Title is required.']
     },
     text: {
         type: String,
-        required: true,
+        required: [true, 'Post Text is required.']
     },
     description: {
         type: String,
-        required: true,
+        required: [true, 'Post Description is required.']
     },
     isPublished: {
         type: Boolean,
