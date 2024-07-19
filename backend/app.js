@@ -6,6 +6,7 @@ const logger = require('morgan');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
 require('dotenv').config();
 
 const indexRouter = require('./routes/index');
@@ -15,8 +16,6 @@ const usersRouter = require('./routes/users');
 const authorsRouter = require('./routes/authors');
 
 const User = require('./models/user');
-
-const cors = require('cors');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
