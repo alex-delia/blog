@@ -33,10 +33,22 @@ export default function Posts() {
         const decodedTitle = he.decode(post.title);
         // Sanitize the decoded HTML
         const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
+        // Decode the HTML entities
+        let sanitizedDescription;
+        if (post.description) {
+            const decodedDescription = he.decode(post.description);
+            // Sanitize the decoded HTML
+            sanitizedDescription = DOMPurify.sanitize(decodedDescription);
+        }
 
         const postDate = convertUTCToUserTimeZone(DateTime.fromISO(post.createdAt), userTimeZone).toLocaleString(DateTime.DATETIME_MED);
 
-        return { ...post, title: sanitizedTitle, createdAt: postDate };
+        if (sanitizedDescription) {
+            return { ...post, title: sanitizedTitle, description: sanitizedDescription, createdAt: postDate };
+        } else {
+            return { ...post, title: sanitizedTitle, createdAt: postDate };
+
+        }
     });
 
 
