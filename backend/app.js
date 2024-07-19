@@ -29,7 +29,11 @@ async function main() {
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://alexdeliadjdashboard.netlify.app", "https://alexdeliadjblog.netlify.app"],
+  optionsSuccessStatus: 200,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
