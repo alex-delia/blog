@@ -33,17 +33,14 @@ export default function NewPostForm() {
         return <Navigate to='login' replace />;
     }
 
-
-
     const handleSubmit = async () => {
         if (editorRef.current) {
             try {
-                const response = await axiosInstance.post('/posts',
+                await axiosInstance.post('/posts',
                     { title, description, text: editorRef.current.getContent() },
                 );
                 queryClient.invalidateQueries(['posts', user.id]);
                 navigate('/posts');
-                console.log(response.data);
             } catch (err) {
                 setError(err);
                 console.error(err);

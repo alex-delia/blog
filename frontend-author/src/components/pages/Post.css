@@ -29,3 +29,7 @@
 .blog-text ol {
     @apply list-decimal;
 }
+
+.blog-text p {
+    @apply mb-3;
+}
