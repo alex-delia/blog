@@ -37,25 +37,18 @@ const NavBar = () => {
                 {isOpen && (
                     <div className="absolute right-0 mt-2 w-28 bg-white divide-y divide-gray-100 rounded-lg shadow-lg">
                         <Link
-                            to="/about"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => setOpen(!isOpen)}
-                        >
-                            About
-                        </Link>
-                        <Link
-                            to="/authors"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => setOpen(!isOpen)}
-                        >
-                            Authors
-                        </Link>
-                        <Link
                             to="/posts"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             onClick={() => setOpen(!isOpen)}
                         >
                             Posts
+                        </Link>
+                        <Link
+                            to="/posts/new"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={() => setOpen(!isOpen)}
+                        >
+                            New Post
                         </Link>
 
                         <div
