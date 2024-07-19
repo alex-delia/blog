@@ -24,7 +24,10 @@ export default function Posts() {
         return <Navigate to='login' replace />;
     }
 
-    if (isError) return <p>Error: {error.message}</p>;
+    if (isError) {
+        console.error(error);
+        return <p>No Posts Found</p>;
+    }
 
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
