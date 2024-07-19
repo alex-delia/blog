@@ -28,12 +28,14 @@ const useUpdatePostMutation = (postId) => {
                 }
             });
 
-            // Optimistically update to the new value for the posts list
-            const updatedPostsList = previousPosts.map(post =>
-                post.id === postId ? { ...post, ...updatedData } : post
-            );
+            if (previousPosts) {
+                // Optimistically update to the new value for the posts list
+                const updatedPostsList = previousPosts.map(post =>
+                    post.id === postId ? { ...post, ...updatedData } : post
+                );
 
-            queryClient.setQueryData(['posts', user.id], updatedPostsList);
+                queryClient.setQueryData(['posts', user.id], updatedPostsList);
+            }
 
             // Return a context object with the snapshotted value
             return { previousPost, previousPosts };

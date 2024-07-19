@@ -34,13 +34,22 @@ const useUpdatePostsMutation = () => {
             // Optimistically update to the new value
             queryClient.setQueryData(['posts', user.id], updatedPosts);
 
-            queryClient.setQueryData(['post', postId], { post: { ...previousPost.post, ...updatedData } });
+            if (previousPost) {
+                queryClient.setQueryData(['post', postId], {
+                    ...previousPost,
+                    post: {
+                        ...previousPost.post,
+                        ...updatedData,
+                    }
+                });
+            }
 
             // Return a context object with the snapshotted value
             return { previousPosts, previousPost };
         },
         // If the mutation fails, use the context object to roll back
         onError: (err, variables, context) => {
+            console.error(err);
             if (err.response && err.response.status === 500) {
                 toast.error(err.response.data.message);
             }
