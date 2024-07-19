@@ -10,6 +10,6 @@ export const axiosFetch = async (url) => {
         };
     }
 
-    const response = await axios.get(url, config);
+    const response = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}${url}`, config);
     return response.data;
 }; 

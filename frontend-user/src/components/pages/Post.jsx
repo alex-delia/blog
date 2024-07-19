@@ -38,13 +38,13 @@ const Post = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`http://localhost:3000/posts/${postId}/comments`,
+            const response = await axios.post(`${import.meta.env.VITE_API_ENDPOINT}/posts/${postId}/comments`,
                 { text: newComment },
                 config
             );
             scrollToBottom();
             const newCommentId = response.data.comment._id;
-            mutate(`http://localhost:3000/posts/${postId}/comments`);
+            mutate(`${import.meta.env.VITE_API_ENDPOINT}/posts/${postId}/comments`);
             setNewComment('');
             setHighlightedCommentId(newCommentId);
 

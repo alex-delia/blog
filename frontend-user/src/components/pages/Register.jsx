@@ -29,7 +29,7 @@ const Register = () => {
         setError(null);
 
         try {
-            const response = await axios.post('http://localhost:3000/register',
+            const response = await axios.post(`${import.meta.env.VITE_API_ENDPOINT}/register`,
                 { firstName, lastName, email, password, confirmPassword });
             const { token } = response.data;
             login(response.data.user, token);

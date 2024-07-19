@@ -21,7 +21,7 @@ const Login = () => {
         setError(null);
 
         try {
-            const response = await axios.post('http://localhost:3000/login', { email, password });
+            const response = await axios.post(`${import.meta.env.VITE_API_ENDPOINT}/login`, { email, password });
             const { token } = response.data;
             login(response.data.user, token);
             navigate(-1);
