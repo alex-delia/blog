@@ -67,7 +67,7 @@ export default function Posts() {
                         <p className="text-xs text-pretty mb-3">Created: {post.createdAt}</p>
                         <p>{post.description}</p>
                     </div>
-                    <div className="flex items-center flex-col gap-1 sm:flex-row sm:w-72 sm:justify-evenly">
+                    <div className="flex items-center justify-center flex-col gap-1 sm:flex-row sm:w-72 sm:justify-evenly">
                         <Link to={`${post.url}/edit`}>
                             <Button text="Edit"
                                 bgColor="bg-fuchsia-500"
