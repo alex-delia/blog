@@ -6,13 +6,12 @@ import he from 'he';
 
 const Author = () => {
     const { authorData, error: authorError, isLoading: authorIsLoading } = useAuthorData();
-    const { postsData, error: postsError, isLoading: postsIsLoading } = useAuthorPosts();
+    const { posts, error: postsError, isLoading: postsIsLoading } = useAuthorPosts();
 
     if (authorIsLoading || postsIsLoading) return <p>Loading...</p>;
     if (authorError) return <p>An error occured</p>;
 
     const author = authorData.author;
-    const posts = postsData?.posts;
 
     return (
         <div className="mt-5">

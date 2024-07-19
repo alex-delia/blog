@@ -11,12 +11,19 @@ const PostPreview = ({ post }) => {
     const decodedTitle = he.decode(post.title);
     const decodedText = he.decode(post.text);
 
+    let sanitizedDescription;
+    if (post.description) {
+        const decodedDescription = he.decode(post.description);
+        sanitizedDescription = DOMPurify.sanitize(decodedDescription);
+    }
+
     // Sanitize the decoded HTML
     const sanitizedTitle = DOMPurify.sanitize(decodedTitle);
     const sanitizedText = DOMPurify.sanitize(decodedText);
 
     post.title = sanitizedTitle;
     post.text = sanitizedText;
+    post.description = sanitizedDescription;
 
     return (
         <div className='shadow-md rounded-md p-4 h-full hover:bg-slate-200 '>
