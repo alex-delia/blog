@@ -175,6 +175,7 @@ export default function EditPostForm() {
                 <ConfirmDeleteModal
                     onConfirm={handleConfirmDelete}
                     onCancel={handleCancelDelete}
+                    commentCount={post.commentCount}
                 />
             )}
         </div>

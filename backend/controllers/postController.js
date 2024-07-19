@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const Comment = require('../models/comment');
 
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require("express-validator");
@@ -34,6 +35,7 @@ exports.get_posts = asyncHandler(async (req, res, next) => {
 exports.get_post_by_id = asyncHandler(async (req, res, next) => {
     const post = await Post.findOne({ _id: req.params.postId, })
         .populate('author')
+        .populate('commentCount')
         .exec();
 
     if (post === null) {
@@ -164,7 +166,9 @@ exports.post_update = [
 exports.post_delete = asyncHandler(async (req, res, next) => {
     const postId = req.params.postId;
 
-    const post = await Post.findByIdAndDelete(postId).exec();
+    await Post.findByIdAndDelete(postId).exec();
 
-    res.json({ message: 'Post Deleted Successfully', post });
+    const comments = await Comment.deleteMany({ post: postId }).exec();
+
+    res.json(`Post Deleted Successfully, Deleted ${comments.deletedCount} comments`);
 });

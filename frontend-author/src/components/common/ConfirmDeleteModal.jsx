@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 
-const ConfirmDeleteModal = ({ onConfirm, onCancel }) => {
+const ConfirmDeleteModal = ({ onConfirm, onCancel, commentCount }) => {
     return (
         <div className="fixed inset-0 z-10 bg-opacity-80 bg-gray-800 flex justify-center items-center">
             <div className="bg-white rounded-lg p-6 shadow-lg">
                 <h2 className="text-xl font-semibold mb-4">Are you sure?</h2>
                 <p className="mb-4">Do you really want to delete this post? </p>
-                <p className='mb-4'>All comments associated with this post will also be deleted.</p>
+                {commentCount ? <p className='mb-4'>This post has {commentCount} comments associated with it.</p>
+                    : ''
+                }
                 <p className='mb-4'>This process cannot be undone.</p>
                 <div className="flex justify-end space-x-4">
                     <button
@@ -30,6 +32,7 @@ const ConfirmDeleteModal = ({ onConfirm, onCancel }) => {
 ConfirmDeleteModal.propTypes = {
     onConfirm: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
+    commentCount: PropTypes.number.isRequired,
 };
 
 export default ConfirmDeleteModal;

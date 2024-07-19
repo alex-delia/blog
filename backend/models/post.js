@@ -44,6 +44,13 @@ postSchema.virtual('url').get(function () {
     return `/posts/${this._id}`;
 });
 
+postSchema.virtual('commentCount', {
+    ref: 'Comment',
+    localField: '_id',
+    foreignField: 'post',
+    count: true, // only get the number of docss
+});
+
 postSchema.set('toJSON', {
     virtuals: true
 });
