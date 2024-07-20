@@ -7,6 +7,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
+const compression = require('compression');
+require("helmet");
 require('dotenv').config();
 
 const indexRouter = require('./routes/index');
@@ -18,6 +20,7 @@ const authorsRouter = require('./routes/authors');
 const User = require('./models/user');
 
 const mongoose = require('mongoose');
+const { default: helmet } = require('helmet');
 mongoose.set('strictQuery', false);
 const mongoDB = process.env.DATABASE_URL;
 
@@ -28,11 +31,15 @@ async function main() {
 
 const app = express();
 
+app.use(helmet());
+app.use(compression());
 app.use(cors({
   origin: ["https://alexdeliadjdashboard.netlify.app", "https://alexdeliadjblog.netlify.app"],
   optionsSuccessStatus: 200,
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+
 
 app.use(logger('dev'));
 app.use(express.json());
