@@ -6,8 +6,5 @@
     "backend/*",
     "frontend-author/*",
     "frontend-user/*"
-  ],
-  "dependencies": {
-    "compression": "^1.7.4"
-  }
+  ]
 }
